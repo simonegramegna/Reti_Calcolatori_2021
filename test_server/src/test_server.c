@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define SERVER_PORT 27015
 #define MAX_CONN 6
 #ifdef WIN32
 
@@ -41,12 +42,13 @@ int main(void) {
 	memset(&addrServer, 0, sizeof(addrServer));
 	addrServer.sin_family = AF_INET;
 	addrServer.sin_addr.s_addr = inet_addr("127.0.0.1");
-	addrServer.sin_port = htons(27015);
+	addrServer.sin_port = htons(SERVER_PORT);
 
 	int bindServer = bind(serverSocket, (struct sockaddr*) &addrServer, sizeof(addrServer));
 
 	if(bindServer < 0){
 		printf("errore nel collegamento tra socket e indirizzo\n");
+			printf("codice: %d",bindServer);
 		return 0;
 	}
 
@@ -58,17 +60,28 @@ int main(void) {
 		return 0;
 	}
 
+	// accetto connessioni dal client
+			struct sockaddr_in clientAddr;
+			int clientSocket;
+			int clientLen;
+
 	while(1){
 
-		// accetto connessioni dal client
-		struct sockaddr_in clientAddr;
-		int clientSocket;
-		int clientLen;
 
 		clientLen = sizeof(clientAddr);
 
 		clientSocket = accept(serverSocket, (struct sockaddr*) &clientAddr, &clientLen);
 
+		if(clientSocket < 0){
+			printf("errore nell'accept \n");
+			closesocket(serverSocket);
+			return 0;
+		}
+
+		char* buf;
+
+		int recvData = recv(clientSocket, buf,5, 0 );
+		printf("received data %s", buf);
 
 	}
 
