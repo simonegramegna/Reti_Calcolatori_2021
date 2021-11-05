@@ -16,13 +16,13 @@ int mult(int a, int b){
 
 	return a*b;
 }
-
-int div(int a, int b){
+/*
+int division(int a, int b){
 
 	if(b == 0){
 		return INT_MAX;
 	}
 	return a/b;
-}
+}*/
 
 

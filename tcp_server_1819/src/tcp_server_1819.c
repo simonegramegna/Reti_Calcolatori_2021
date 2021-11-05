@@ -109,15 +109,69 @@ int main(int argc, char **argv)
 				}
 				printf("Connection established with: %s\n", inet_ntoa(client_addr.sin_addr));
 
-				int bytes_rcvd;
+				int information_rcvd;
+				int dim_message;
 				message_operation client_operation;
 
-				char opeartion;
-				int op_1;
-				int op_2;
+				dim_message = (int) sizeof(client_operation);
+				information_rcvd = recv(client_socket, (message_operation*) &client_operation, dim_message, 0);
+
+				if(information_rcvd <= 0){
+
+					errorhandler("recv() string failed.\n");
+								closesocket(socketserver);
+								clearwinsock();
+								system("pause");
+								return -1;
+				}
+
+				int op1, op2, result;
+				char operation;
+
+				op1 = client_operation.operator_1;
+				op2 = client_operation.operator_2;
+				operation = client_operation.operation;
+
+				switch(operation){
+
+				case 'A':
+					result = add(op1,op2);
+					break;
+
+				case 'S':
+					result = diff(op1,op2);
+				break;
+
+				case 'M':
+					result = mult(op1, op2);
+				break;
+				default:
+					result = 0;
+
+				}
+
+				int send_result;
+				int result_size = (int) sizeof(int);
+
+				send_result = send(client_socket, (int*) &result, result_size, 0);
+
+				if(send_result < 0){
+
+					errorhandler("send() stringhe modificate failed.\n");
+							closesocket(socketserver);
+							clearwinsock();
+							system("pause");
+							return -1;
+
+				}
+
 
 	}
 
+	clearwinsock();
+		closesocket(socketserver);
+		system("pause");
+		return 0;
 
 	return 0;
 }
