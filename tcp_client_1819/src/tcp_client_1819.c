@@ -90,8 +90,8 @@ int main()
 	scanf("%d", &requested_operation.operator_1);
 	printf("\nInserisci il secondo numero: \n");
 	scanf("%d", &requested_operation.operator_2);
-	printf("Inserisci l'operazione da eseguire \n");
-	scanf("%c", &requested_operation.operation);
+	printf("Inserisci l'operazione da eseguire: ");
+	scanf(" %c", &requested_operation.operation);
 
 	bytes_sent = (int)sizeof(requested_operation);
 	send_operation = send(socketclient, (message_operation *)&requested_operation, bytes_sent, 0);
