@@ -17,6 +17,7 @@
 #define TRUE 1
 
 #include "message.h"
+#include "parse_input.h"
 
 //Funzione che stampa come messaggio di errore la stringa data in input
 void errorhandler(char *errorMessage)
@@ -53,7 +54,7 @@ int main()
 		printf("Socket creation failed.\n");
 		closesocket(socketclient);
 		clearwinsock();
-		system("pause");
+		//getc();
 		return -1;
 	}
 
@@ -71,13 +72,16 @@ int main()
 	/****************(1) Il client richiede la connessione al server.********************************/
 
 	//CONNESSIONE AL SERVER
-	if (connect(socketclient, (struct sockaddr *)&serveraddress,
-				(int)sizeof(serveraddress)) < 0)
+	int server_connection;
+	server_connection = connect(socketclient, (struct sockaddr *)&serveraddress,
+								(int)sizeof(serveraddress));
+
+	if (server_connection < 0)
 	{
 		errorhandler("Failed to connect.\n");
 		closesocket(socketclient);
 		clearwinsock();
-		system("pause");
+		//getc();
 		return -1;
 	}
 
@@ -101,7 +105,7 @@ int main()
 		errorhandler("send() string failed.\n");
 		closesocket(socketclient);
 		clearwinsock();
-		system("pause");
+		//getc();
 		return -1;
 	}
 
@@ -118,16 +122,23 @@ int main()
 		errorhandler("recv() STRINGHE MODIFICATE failed.\n");
 		closesocket(socketclient);
 		clearwinsock();
-		system("pause");
+		//getc();
 		return -1;
 	}
 
 	printf("Il risultato e' %d ", result);
 
+	char *s1;
+	s1 = malloc(256 * sizeof(char));
+	printf("Inserisci la stringa di operazione \n");
+	scanf("%s", s1);
+
+	printf(" \n risultato %d", valid_input(s1));
+
 	printf("Close connection.\n");
-		closesocket(socketclient);
-		clearwinsock();
-		system("pause");
+	closesocket(socketclient);
+	clearwinsock();
+	//getc();
 
 	return 0;
 }

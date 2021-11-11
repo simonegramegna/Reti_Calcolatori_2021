@@ -2,19 +2,22 @@
 #include <limits.h>
 #include "number_operations.h"
 
-int add(int a, int b){
+int add(int a, int b)
+{
 
-	return a+b;
+	return a + b;
 }
 
-int diff(int a, int b){
+int diff(int a, int b)
+{
 
-	return a-b;
+	return a - b;
 }
 
-int mult(int a, int b){
+int mult(int a, int b)
+{
 
-	return a*b;
+	return a * b;
 }
 /*
 int division(int a, int b){
@@ -24,5 +27,3 @@ int division(int a, int b){
 	}
 	return a/b;
 }*/
-
-
