@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "math_operations.h"
+#include "math_message.h"
+
 // socket libraries
 #ifdef WIN32
 
@@ -47,7 +50,7 @@ int main(int arcg, char **argv)
 	if (result != 0)
 	{
 		error_handler("Error at WSAStartup()\n");
-		system("pause");
+		getchar();
 		return 0;
 	}
 #endif
@@ -59,7 +62,7 @@ int main(int arcg, char **argv)
 	{
 		error_handler("socket creation failed. \n");
 		clearwinsock();
-		system("pause");
+		getchar();
 		return -1;
 	}
 
@@ -75,7 +78,7 @@ int main(int arcg, char **argv)
 	{
 		error_handler("bind() failed. \n");
 		clearwinsock();
-		system("pause");
+		getchar();
 		return -1;
 	}
 
@@ -86,7 +89,7 @@ int main(int arcg, char **argv)
 		error_handler("listen() failed.\n");
 		closesocket(server_socket);
 		clearwinsock();
-		system("pause");
+		getchar();
 		return -1;
 	}
 
@@ -106,14 +109,79 @@ int main(int arcg, char **argv)
 			error_handler("accept() failed.\n");
 			closesocket(client_socket);
 			clearwinsock();
-			system("pause");
+			getchar();
 			return -1;
 		}
 
 		printf("Connection established with: %s\n", inet_ntoa(client_address.sin_addr));
-		//int information_rcvd;
-		//int message_size;
+
+		int information_rcvd;
+		int message_size;
+		math_message message_rcvd;
+
+		message_size = (int)sizeof(message_rcvd);
+		information_rcvd = recv(client_socket, (math_message *)&message_rcvd, message_size, 0);
+
+		if (information_rcvd <= 0)
+		{
+
+			error_handler("recv() string failed.\n");
+			closesocket(server_socket);
+			clearwinsock();
+			getchar();
+			return -1;
+		}
+
+		int op1;
+		int op2;
+		float computed_value;
+		char operation;
+
+		op1 = message_rcvd.operator_1;
+		op2 = message_rcvd.operator_2;
+		operation = message_rcvd.operation;
+
+		switch (operation)
+		{
+		case '+':
+			computed_value = (float)add(op1, op2);
+			break;
+
+		case '-':
+			computed_value = (float)diff(op1, op2);
+			break;
+
+		case 'x':
+
+			computed_value = (float)mult(op1, op2);
+			break;
+
+		case '/':
+			computed_value = division(op1, op2);
+			break;
+		default:
+			continue;
+		}
+
+		int result_sent;
+		int result_size;
+
+		result_size = (int)sizeof(float);
+		result_sent = send(client_socket, (float *)&computed_value, result_size, 0);
+
+		if (result_sent < 0)
+		{
+
+			error_handler("send() stringhe modificate failed.\n");
+			closesocket(result_sent);
+			clearwinsock();
+			getchar();
+			return -1;
+		}
 	}
+	clearwinsock();
+	closesocket(server_socket);
+	getchar();
 
 	return 0;
 }

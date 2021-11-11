@@ -4,12 +4,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../src/math_operations.c \
 ../src/tcp_server_2122.c 
 
 OBJS += \
+./src/math_operations.o \
 ./src/tcp_server_2122.o 
 
 C_DEPS += \
+./src/math_operations.d \
 ./src/tcp_server_2122.d 
 
 
