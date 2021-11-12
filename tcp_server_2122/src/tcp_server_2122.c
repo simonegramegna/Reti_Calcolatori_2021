@@ -44,7 +44,7 @@ int main(int arcg, char **argv)
     if (result != 0)
     {
         printf("Error at WSAStartup()\n");
-        getch();
+        getchar();
         return 0;
     }
 #endif
@@ -56,7 +56,7 @@ int main(int arcg, char **argv)
     {
         printf("socket creation failed. \n");
         clearwinsock();
-        getch();
+        getchar();
         return -1;
     }
 
@@ -72,7 +72,7 @@ int main(int arcg, char **argv)
     {
         printf("bind() failed. \n");
         clearwinsock();
-        getch();
+        getchar();
         return -1;
     }
 
@@ -83,7 +83,7 @@ int main(int arcg, char **argv)
         printf("listen() failed.\n");
         closesocket(server_socket);
         clearwinsock();
-        getch();
+        getchar();
         return -1;
     }
 
@@ -99,11 +99,10 @@ int main(int arcg, char **argv)
 
         if (client_socket < 0)
         {
-
             printf("accept() failed.\n");
             closesocket(client_socket);
             clearwinsock();
-            getch();
+            getchar();
             return -1;
         }
 
@@ -118,40 +117,39 @@ int main(int arcg, char **argv)
 
         if (information_rcvd <= 0)
         {
-
             printf("recv() string failed.\n");
             closesocket(server_socket);
             clearwinsock();
-            getch();
+            getchar();
             return -1;
         }
 
-        int op1;
-        int op2;
+        int n1;
+        int n2;
         float computed_value;
         char operation;
 
-        op1 = message_rcvd.operator_1;
-        op2 = message_rcvd.operator_2;
+        n1 = message_rcvd.operator_1;
+        n2 = message_rcvd.operator_2;
         operation = message_rcvd.operation;
 
         switch (operation)
         {
         case '+':
-            computed_value = (float)add(op1, op2);
+            computed_value = (float)add(n1, n2);
             break;
 
         case '-':
-            computed_value = (float)diff(op1, op2);
+            computed_value = (float)diff(n1, n2);
             break;
 
         case 'x':
 
-            computed_value = (float)mult(op1, op2);
+            computed_value = (float)mult(n1, n2);
             break;
 
         case '/':
-            computed_value = division(op1, op2);
+            computed_value = division(n1, n2);
             break;
         default:
             continue;
@@ -165,17 +163,16 @@ int main(int arcg, char **argv)
 
         if (result_sent < 0)
         {
-
             printf("send() stringhe modificate failed.\n");
             closesocket(result_sent);
             clearwinsock();
-            getch();
+            getchar();
             return -1;
         }
     }
     clearwinsock();
     closesocket(server_socket);
-    getch();
+    getchar();
 
     return 0;
 }
