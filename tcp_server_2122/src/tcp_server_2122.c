@@ -107,7 +107,6 @@ int main(int arcg, char **argv)
         }
 
         printf("Connection established with: %s\n", inet_ntoa(client_address.sin_addr));
-
         int information_rcvd;
         int message_size;
         math_message message_rcvd;
@@ -132,6 +131,8 @@ int main(int arcg, char **argv)
         n1 = message_rcvd.operator_1;
         n2 = message_rcvd.operator_2;
         operation = message_rcvd.operation;
+
+        printf("\nn1: %d n2: %d op: %c", n1, n2, operation);
 
         switch (operation)
         {
@@ -160,6 +161,8 @@ int main(int arcg, char **argv)
 
         result_size = (int)sizeof(float);
         result_sent = send(client_socket, (float *)&computed_value, result_size, 0);
+        printf("\ncomputed values: %f\n", computed_value);
+        fflush(stdin);
 
         if (result_sent < 0)
         {

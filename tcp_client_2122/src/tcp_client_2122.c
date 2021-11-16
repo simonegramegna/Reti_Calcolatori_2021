@@ -28,7 +28,7 @@ int correct_operation(char operator)
 	int correct;
 	correct = -1;
 
-	if (operator== '=' || operator== 'x' || operator== '+' || operator== '/' || operator=='-')
+	if (operator== '=' || operator== 'x' || operator== '+' || operator== '/' || operator== '-')
 	{
 		correct = 0;
 	}
@@ -92,12 +92,18 @@ int main(int argc, char **argv)
 
 	do
 	{
+		fflush(stdin);
 		printf("Enter the operation in this format: operator[+,-,x,\], first number[integer], second number[integer]\n");
-		scanf(" %c %d %d", &operation, &n1, &n2);
+		printf("Enter the operator: ");
+		scanf(" %c", &operation);
+		printf("\nEnter the first number: ");
+		scanf("%d", &n1);
+		printf("\nEnter the second number: ");
+		scanf("%d", &n2);
 
 		while (correct_operation(operation) == -1)
 		{
-			printf("Not valid operation, plese enter one of the following simbols\n- + , sum\n- , difference\n-x , multiplication\n-/ , division \n");
+			printf("Not valid operation, please enter one of the following simbols\n- + , sum\n- , difference\n-x , multiplication\n-/ , division \n");
 			scanf(" %c", &operation);
 		}
 		requested_computation.operator_1 = n1;
@@ -105,8 +111,11 @@ int main(int argc, char **argv)
 		requested_computation.operation = operation;
 
 		operation_size = (int)sizeof(requested_computation);
+
+		// la send da problemi
 		send_operation = send(client_socket, (math_message *)&requested_computation, operation_size, 0);
 
+		printf("s: %d", send_operation);
 		if (send_operation < 0)
 		{
 			printf("send() operation failed.\n");
@@ -122,7 +131,10 @@ int main(int argc, char **argv)
 		int server_response;
 
 		result_size = (int)sizeof(float);
-		server_response = recv(client_socket, (int *)&result_rcvd, result_size, 0);
+		printf("ok");
+		server_response = recv(client_socket, (float *)&result_rcvd, result_size, 0);
+
+		printf("sr: %d", server_response);
 
 		if (server_response <= 0)
 		{
@@ -134,7 +146,7 @@ int main(int argc, char **argv)
 		}
 		printf("%d %c %d = %.2f\n", n1, operation, n2, result_rcvd);
 
-	} while (operation != '=');
+	} while (1);
 
 	printf("Close connection.\n");
 	closesocket(client_socket);
