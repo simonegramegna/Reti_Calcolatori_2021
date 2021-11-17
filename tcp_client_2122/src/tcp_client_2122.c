@@ -4,6 +4,7 @@
 #include <limits.h>
 
 #include "math_message.h"
+#include "string_parser.h"
 
 // socket libraries
 #ifdef WIN32
@@ -22,18 +23,6 @@ void clearwinsock()
 #ifdef WIN32
     WSACleanup();
 #endif
-}
-
-int correct_operation(char operator)
-{
-    int correct;
-    correct = -1;
-
-    if (operator== '=' || operator== 'x' || operator== '+' || operator== '/' || operator== '-')
-    {
-        correct = 0;
-    }
-    return correct;
 }
 
 int main(int argc, char **argv)
@@ -85,33 +74,29 @@ int main(int argc, char **argv)
     math_message requested_computation;
     int operation_size;
     int send_operation;
-
-    int n1;
-    int n2;
-    char operation;
     char user_input[30];
+    char parsed_user_input[30];
 
     do
     {
-        printf("Enter the operation in this format: operator[+,-,x,\], first number[integer], second number[integer]\n");
+        printf("Enter the operation in this format: operator[+,-,x,\], first number[integer], second number[integer], press = to quit\n");
         gets(user_input);
+        strcpy(parsed_user_input, user_input);
 
-        /*
-         * Da mettere il parsing
-        */
-
-
-        
-        if (operation == '=')
+        while (valid_input(user_input) == 0)
         {
-            printf("Exiting..");
-            break;
+
+            printf("Input NOT valid, please enter again the operation in this format: operator[+,-,x,\], first number[integer], second number[integer], press = to quit\n");
+            gets(user_input);
+            strcpy(parsed_user_input, user_input);
         }
 
-        requested_computation.operator_1 = n1;
-        requested_computation.operator_2 = n2;
-        requested_computation.operation = operation;
-
+        if (stop_command(parsed_user_input) == 1)
+        {
+            printf("Exiting...\n");
+            break;
+        }
+        requested_computation = get_math_message(parsed_user_input);
         operation_size = (int)sizeof(requested_computation);
         send_operation = send(client_socket, (math_message *)&requested_computation, operation_size, 0);
 
@@ -123,7 +108,7 @@ int main(int argc, char **argv)
             getchar();
             return -1;
         }
-        
+
         float result_rcvd;
         int result_size;
         int server_response;
@@ -139,7 +124,7 @@ int main(int argc, char **argv)
             getchar();
             return -1;
         }
-        printf("\n%d %c %d = %.2f\n", n1, operation, n2, result_rcvd);
+        printf("\n%d %c %d = %.2f\n",  requested_computation.n1,  requested_computation.operation,  requested_computation.n2, result_rcvd);
 
     } while (1);
 

@@ -17,7 +17,7 @@
 #include <unistd.h>
 #endif
 
-#define PROTOPORT 27015 // defualt protocol number
+#define PROTOPORT 27015 // default protocol number
 #define QLEN 6          // length of queue of waiting clients
 
 void clearwinsock()
@@ -127,11 +127,9 @@ int main(int arcg, char **argv)
         float computed_value;
         char operation;
 
-        n1 = message_rcvd.operator_1;
-        n2 = message_rcvd.operator_2;
+        n1 = message_rcvd.n1;
+        n2 = message_rcvd.n2;
         operation = message_rcvd.operation;
-
-        printf("\nn1: %d n2: %d op: %c", n1, n2, operation);
 
         switch (operation)
         {
@@ -160,7 +158,6 @@ int main(int arcg, char **argv)
 
         result_size = (int)sizeof(float);
         result_sent = send(client_socket, (float *)&computed_value, result_size, 0);
-        printf("\ncomputed values: %f\n", computed_value);
 
         if (result_sent < 0)
         {

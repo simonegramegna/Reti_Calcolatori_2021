@@ -4,9 +4,9 @@
 typedef struct
 {
 
-	char operation;
-	int operator_1;
-	int operator_2;
+    char operation;
+    int operator_1;
+    int n2;
 
 } message_operation;
 

@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define PROTOPORT 27015 //defualt protocol number
-#define BUFFERSIZE 512	//defualt buffer size
+#define BUFFERSIZE 512  //defualt buffer size
 #define QLEN 6
 #define TRUE 1
 
@@ -23,156 +23,156 @@
 //Funzione che stampa come messaggio di errore la stringa data in input
 void errorhandler(char *errorMessage)
 {
-	printf("%s", errorMessage);
+    printf("%s", errorMessage);
 }
 //Funzione che pulisce la struttura WSADATA utilizzata per inizializzare le socket in windows
 void clearwinsock()
 {
 #ifdef WIN32
-	WSACleanup();
+    WSACleanup();
 #endif
 }
 
 int main(int argc, char **argv)
 {
 
-	/** inserisco in input la porta utilizzata dalla socket del server **/
-	int port = PROTOPORT;
+    /** inserisco in input la porta utilizzata dalla socket del server **/
+    int port = PROTOPORT;
 //Inizializzo winsock
 #ifdef WIN32
-	WSADATA wsa_data;
-	int result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
-	if (result != NO_ERROR)
-	{
-		errorhandler("Error at WSAStartup()\n");
-		system("pause");
-		return 0;
-	}
+    WSADATA wsa_data;
+    int result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+    if (result != NO_ERROR)
+    {
+        errorhandler("Error at WSAStartup()\n");
+        system("pause");
+        return 0;
+    }
 #endif
-	//CREAZIONE DELLA SOCKET SERVER
-	int socketserver; //descrittore della socket
-	socketserver = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (socketserver < 0)
-	{
-		errorhandler("socket creation failed. \n");
-		clearwinsock();
-		system("pause");
-		return -1;
-	}
-	//ASSEGNAZIONE DI UN INDIRIZZO AL SERVER (IP LOCALE + PORTA) ALLA SOCKET SERVER
-	struct sockaddr_in localaddress;
-	memset(&localaddress, 0, sizeof(localaddress));
-	localaddress.sin_family = AF_INET;
-	localaddress.sin_addr.s_addr = inet_addr("127.0.0.1");
-	localaddress.sin_port = htons(port);
-	/**
+    //CREAZIONE DELLA SOCKET SERVER
+    int socketserver; //descrittore della socket
+    socketserver = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (socketserver < 0)
+    {
+        errorhandler("socket creation failed. \n");
+        clearwinsock();
+        system("pause");
+        return -1;
+    }
+    //ASSEGNAZIONE DI UN INDIRIZZO AL SERVER (IP LOCALE + PORTA) ALLA SOCKET SERVER
+    struct sockaddr_in localaddress;
+    memset(&localaddress, 0, sizeof(localaddress));
+    localaddress.sin_family = AF_INET;
+    localaddress.sin_addr.s_addr = inet_addr("127.0.0.1");
+    localaddress.sin_port = htons(port);
+    /**
 	 converts values between the host and
 	 network byte order. Specifically, htons () converts 16 bit quantities
 	 from host byte order to network byte order .
 	 **/
-	//LEGO LA STRUTTURA INDIRIZZO DEL SERVER AL DESCRITTORE DELLA SOCKET SERVER
-	if (bind(socketserver, (struct sockaddr *)&localaddress,
-			 sizeof(localaddress)) < 0)
-	{
-		errorhandler("bind() failed. \n");
-		clearwinsock();
-		system("pause");
-		return -1;
-	}
-	//SETTAGGIO DELLA SOCKET ALL'ASCOLTO
-	if (listen(socketserver, QLEN) < 0)
-	{
-		errorhandler("listen() failed.\n");
-		closesocket(socketserver);
-		clearwinsock();
-		system("pause");
-		return -1;
-	}
+    //LEGO LA STRUTTURA INDIRIZZO DEL SERVER AL DESCRITTORE DELLA SOCKET SERVER
+    if (bind(socketserver, (struct sockaddr *)&localaddress,
+             sizeof(localaddress)) < 0)
+    {
+        errorhandler("bind() failed. \n");
+        clearwinsock();
+        system("pause");
+        return -1;
+    }
+    //SETTAGGIO DELLA SOCKET ALL'ASCOLTO
+    if (listen(socketserver, QLEN) < 0)
+    {
+        errorhandler("listen() failed.\n");
+        closesocket(socketserver);
+        clearwinsock();
+        system("pause");
+        return -1;
+    }
 
-	struct sockaddr_in client_addr;
-	int client_socket;
-	int client_size;
+    struct sockaddr_in client_addr;
+    int client_socket;
+    int client_size;
 
-	while (TRUE)
-	{
+    while (TRUE)
+    {
 
-		client_size = sizeof(client_addr); //set the size of the client adress
-		/*************** (2)Stabilita la connessione, il server invia al client la stringa "connessione avvenuta".**********/
+        client_size = sizeof(client_addr); //set the size of the client adress
+        /*************** (2)Stabilita la connessione, il server invia al client la stringa "connessione avvenuta".**********/
 
-		if ((client_socket = accept(socketserver,
-									(struct sockaddr *)&client_addr, &client_size)) < 0)
-		{
-			errorhandler("accept() failed.\n");
-			//CHIUSURA DELLA CONNESSIONE
-			closesocket(client_socket);
-			clearwinsock();
-			system("pause");
-			return 0;
-		}
-		printf("Connection established with: %s\n", inet_ntoa(client_addr.sin_addr));
+        if ((client_socket = accept(socketserver,
+                                    (struct sockaddr *)&client_addr, &client_size)) < 0)
+        {
+            errorhandler("accept() failed.\n");
+            //CHIUSURA DELLA CONNESSIONE
+            closesocket(client_socket);
+            clearwinsock();
+            system("pause");
+            return 0;
+        }
+        printf("Connection established with: %s\n", inet_ntoa(client_addr.sin_addr));
 
-		int information_rcvd;
-		int dim_message;
-		message_operation client_operation;
+        int information_rcvd;
+        int dim_message;
+        message_operation client_operation;
 
-		dim_message = (int)sizeof(client_operation);
-		information_rcvd = recv(client_socket, (message_operation *)&client_operation, dim_message, 0);
+        dim_message = (int)sizeof(client_operation);
+        information_rcvd = recv(client_socket, (message_operation *)&client_operation, dim_message, 0);
 
-		if (information_rcvd <= 0)
-		{
+        if (information_rcvd <= 0)
+        {
 
-			errorhandler("recv() string failed.\n");
-			closesocket(socketserver);
-			clearwinsock();
-			system("pause");
-			return -1;
-		}
+            errorhandler("recv() string failed.\n");
+            closesocket(socketserver);
+            clearwinsock();
+            system("pause");
+            return -1;
+        }
 
-		int op1, op2, result;
-		char operation;
+        int op1, op2, result;
+        char operation;
 
-		op1 = client_operation.operator_1;
-		op2 = client_operation.operator_2;
-		operation = client_operation.operation;
+        op1 = client_operation.n1;
+        op2 = client_operation.operator_2;
+        operation = client_operation.operation;
 
-		switch (operation)
-		{
+        switch (operation)
+        {
 
-		case 'A':
-			result = add(op1, op2);
-			break;
+        case 'A':
+            result = add(op1, op2);
+            break;
 
-		case 'S':
-			result = diff(op1, op2);
-			break;
+        case 'S':
+            result = diff(op1, op2);
+            break;
 
-		case 'M':
-			result = mult(op1, op2);
-			break;
-		default:
-			result = 0;
-		}
+        case 'M':
+            result = mult(op1, op2);
+            break;
+        default:
+            result = 0;
+        }
 
-		int send_result;
-		int result_size = (int)sizeof(int);
+        int send_result;
+        int result_size = (int)sizeof(int);
 
-		send_result = send(client_socket, (int *)&result, result_size, 0);
+        send_result = send(client_socket, (int *)&result, result_size, 0);
 
-		if (send_result < 0)
-		{
+        if (send_result < 0)
+        {
 
-			errorhandler("send() stringhe modificate failed.\n");
-			closesocket(socketserver);
-			clearwinsock();
-			system("pause");
-			return -1;
-		}
-	}
+            errorhandler("send() stringhe modificate failed.\n");
+            closesocket(socketserver);
+            clearwinsock();
+            system("pause");
+            return -1;
+        }
+    }
 
-	clearwinsock();
-	closesocket(socketserver);
-	system("pause");
-	return 0;
+    clearwinsock();
+    closesocket(socketserver);
+    system("pause");
+    return 0;
 
-	return 0;
+    return 0;
 }
