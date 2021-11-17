@@ -18,6 +18,10 @@
 #include <unistd.h>
 #endif
 
+#define DEFAULT_ADDR "127.0.0.1"
+#define DEFAULT_PORT 27015
+#define DIM_INPUT 30
+
 void clearwinsock()
 {
 #ifdef WIN32
@@ -39,10 +43,14 @@ int main(int argc, char **argv)
     }
 #endif
 
+    int port;
+    int address;
     int client_socket;
     struct sockaddr_in server_address;
 
     client_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    port = DEFAULT_PORT;
+    address = DEFAULT_ADDR;
 
     if (client_socket < 0)
     {
@@ -53,10 +61,16 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    if (argc == 2)
+    {
+        address = argv[0];
+        port = atoi(argv[1]);
+    }
+
     memset(&server_address, 0, sizeof(server_address));
     server_address.sin_family = AF_INET;
-    server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server_address.sin_port = htons(27015);
+    server_address.sin_addr.s_addr = inet_addr(address);
+    server_address.sin_port = htons(port);
 
     int server_connection;
     server_connection = connect(client_socket, (struct sockaddr *)&server_address,
@@ -74,24 +88,23 @@ int main(int argc, char **argv)
     math_message requested_computation;
     int operation_size;
     int send_operation;
-    char user_input[30];
-    char parsed_user_input[30];
+    char user_input[DIM_INPUT];
+    char parsed_user_input[DIM_INPUT];
 
-    do
+    for (;;)
     {
-        printf("Enter the operation in this format: operator[+,-,x,\], first number[integer], second number[integer], press = to quit\n");
+        printf("Enter the operation in this format: operator[+,-,x,\\], first number[integer], second number[integer], press = to quit\n");
         gets(user_input);
         strcpy(parsed_user_input, user_input);
 
         while (valid_input(user_input) == 0)
         {
-
-            printf("Input NOT valid, please enter again the operation in this format: operator[+,-,x,\], first number[integer], second number[integer], press = to quit\n");
+            printf("Input NOT valid, please enter again the operation in this format: operator[+,-,x,\\], first number[integer], second number[integer], press = to quit\n");
             gets(user_input);
             strcpy(parsed_user_input, user_input);
         }
 
-        if (stop_command(parsed_user_input) == 1)
+        if (user_input[0] == '=')
         {
             printf("Exiting...\n");
             break;
@@ -124,9 +137,8 @@ int main(int argc, char **argv)
             getchar();
             return -1;
         }
-        printf("\n%d %c %d = %.2f\n",  requested_computation.n1,  requested_computation.operation,  requested_computation.n2, result_rcvd);
-
-    } while (1);
+        printf("\n%d %c %d = %.2f\n", requested_computation.n1, requested_computation.operation, requested_computation.n2, result_rcvd);
+    }
 
     printf("Close connection.\n");
     closesocket(client_socket);

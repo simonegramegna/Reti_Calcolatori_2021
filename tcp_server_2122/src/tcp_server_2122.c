@@ -17,7 +17,8 @@
 #include <unistd.h>
 #endif
 
-#define PROTOPORT 27015 // default protocol number
+#define DEFAULT_ADDR "127.0.0.1"
+#define DEFAULT_PORT 27015
 #define QLEN 6          // length of queue of waiting clients
 
 void clearwinsock()
@@ -29,6 +30,7 @@ void clearwinsock()
 
 int main(int arcg, char **argv)
 {
+    int server_address;
     int server_port;
     int server_socket;
     struct sockaddr_in localaddress;
@@ -48,7 +50,8 @@ int main(int arcg, char **argv)
     }
 #endif
 
-    server_port = PROTOPORT;
+    server_address = DEFAULT_ADDR;
+    server_port = DEFAULT_PORT;
     server_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     if (server_socket < 0)
@@ -61,7 +64,7 @@ int main(int arcg, char **argv)
 
     memset(&localaddress, 0, sizeof(localaddress));
     localaddress.sin_family = AF_INET;
-    localaddress.sin_addr.s_addr = inet_addr("127.0.0.1");
+    localaddress.sin_addr.s_addr = inet_addr(server_address);
     localaddress.sin_port = htons(server_port);
 
     bind_socket = bind(server_socket, (struct sockaddr *)&localaddress,

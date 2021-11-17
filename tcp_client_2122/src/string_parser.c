@@ -16,7 +16,7 @@ int correct_operation(char operator)
     return correct;
 }
 
-int valid_input(char *input_string)
+int valid_input(char *user_input)
 {
     int valid;
     char *input_token;
@@ -24,7 +24,7 @@ int valid_input(char *input_string)
 
     valid = 1;
     token_counter = 0;
-    input_token = strtok(input_string, " ");
+    input_token = strtok(user_input, " ");
 
     while (input_token != NULL && valid == 1)
     {
@@ -56,20 +56,6 @@ int valid_input(char *input_string)
     }
 
     return valid;
-}
-
-int stop_command(char *input_string)
-{
-
-    int stop;
-    stop = 0;
-
-    if (input_string[0] == '=')
-    {
-        stop = 1;
-    }
-
-    return stop;
 }
 
 math_message get_math_message(char *user_input)

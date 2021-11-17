@@ -3,9 +3,7 @@
 
 #include "math_message.h"
 
-int valid_input(char *input_string);
-
-int stop_command(char *input_string);
+int valid_input(char *user_input);
 
 math_message get_math_message(char *user_input);
 
