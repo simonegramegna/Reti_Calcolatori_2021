@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #include "math_message.h"
 
@@ -88,26 +89,22 @@ int main(int argc, char **argv)
     int n1;
     int n2;
     char operation;
+    char user_input[30];
 
     do
     {
-        fflush(stdin);
         printf("Enter the operation in this format: operator[+,-,x,\], first number[integer], second number[integer]\n");
-        printf("Enter the operator: ");
-        scanf(" %c", &operation);
-        printf("\nEnter the first number: ");
-        scanf("%d", &n1);
-        printf("\nEnter the second number: ");
-        scanf("%d", &n2);
+        gets(user_input);
 
-        while (correct_operation(operation) == -1)
-        {
-            printf("Not valid operation, please enter one of the following simbols\n- + , sum\n- , difference\n-x , multiplication\n-/ , division \n");
-            scanf(" %c", &operation);
-        }
+        /*
+         * Da mettere il parsing
+        */
 
+
+        
         if (operation == '=')
         {
+            printf("Exiting..");
             break;
         }
 
@@ -116,8 +113,6 @@ int main(int argc, char **argv)
         requested_computation.operation = operation;
 
         operation_size = (int)sizeof(requested_computation);
-
-        // la send da problemi
         send_operation = send(client_socket, (math_message *)&requested_computation, operation_size, 0);
 
         if (send_operation < 0)
@@ -128,8 +123,7 @@ int main(int argc, char **argv)
             getchar();
             return -1;
         }
-        printf("\n");
-
+        
         float result_rcvd;
         int result_size;
         int server_response;
@@ -145,7 +139,7 @@ int main(int argc, char **argv)
             getchar();
             return -1;
         }
-        printf("%d %c %d = %.2f\n", n1, operation, n2, result_rcvd);
+        printf("\n%d %c %d = %.2f\n", n1, operation, n2, result_rcvd);
 
     } while (1);
 

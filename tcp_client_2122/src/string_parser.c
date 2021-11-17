@@ -4,14 +4,29 @@
 
 #include "string_parser.h"
 
-char get_operator(char* input_string){
+int valid_input(char *input_string){
 
-    char operator;
 
-    if(strlen(input_string) > 1){
+    int valid;
+    char *input_token;
+    int token_counter;
 
-        operator = input_string[0];
+    valid = 1;
+    token_counter = 0;
+    input_token = strtok(input_string, " ");
+
+    while(input_token != NULL && valid == 1){
+
+        token_counter = token_counter + 1;
+
+        if(token_counter == 1){
+
+            
+
+        }else{
+
+        }
     }
-    return operator;
-}
 
+    
+}
