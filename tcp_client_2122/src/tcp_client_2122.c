@@ -19,139 +19,140 @@
 void clearwinsock()
 {
 #ifdef WIN32
-	WSACleanup();
+    WSACleanup();
 #endif
 }
 
 int correct_operation(char operator)
 {
-	int correct;
-	correct = -1;
+    int correct;
+    correct = -1;
 
-	if (operator== '=' || operator== 'x' || operator== '+' || operator== '/' || operator== '-')
-	{
-		correct = 0;
-	}
-	return correct;
+    if (operator== '=' || operator== 'x' || operator== '+' || operator== '/' || operator== '-')
+    {
+        correct = 0;
+    }
+    return correct;
 }
 
 int main(int argc, char **argv)
 {
 #ifdef WIN32
 
-	WSADATA wsaData;
-	int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
-	if (result != NO_ERROR)
-	{
-		error_handler("Error at WSAStartup().\n");
-		system("pause");
-		return -1;
-	}
+    WSADATA wsaData;
+    int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (result != 0)
+    {
+        printf("Error at WSAStartup().\n");
+        system("pause");
+        return -1;
+    }
 #endif
 
-	int client_socket;
-	struct sockaddr_in server_address;
+    int client_socket;
+    struct sockaddr_in server_address;
 
-	client_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    client_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	if (client_socket < 0)
-	{
+    if (client_socket < 0)
+    {
+        printf("Socket creation failed.\n");
+        closesocket(client_socket);
+        clearwinsock();
+        getchar();
+        return -1;
+    }
 
-		printf("Socket creation failed.\n");
-		closesocket(client_socket);
-		clearwinsock();
-		getchar();
-		return -1;
-	}
+    memset(&server_address, 0, sizeof(server_address));
+    server_address.sin_family = AF_INET;
+    server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_address.sin_port = htons(27015);
 
-	memset(&server_address, 0, sizeof(server_address));
-	server_address.sin_family = AF_INET;
-	server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
-	server_address.sin_port = htons(27015);
+    int server_connection;
+    server_connection = connect(client_socket, (struct sockaddr *)&server_address,
+                                (int)sizeof(server_address));
 
-	int server_connection;
-	server_connection = connect(client_socket, (struct sockaddr *)&server_address,
-								(int)sizeof(server_address));
+    if (server_connection < 0)
+    {
+        printf("Failed to connect.\n");
+        closesocket(client_socket);
+        clearwinsock();
+        getchar();
+        return -1;
+    }
 
-	if (server_connection < 0)
-	{
-		printf("Failed to connect.\n");
-		closesocket(client_socket);
-		clearwinsock();
-		getchar();
-		return -1;
-	}
+    math_message requested_computation;
+    int operation_size;
+    int send_operation;
 
-	math_message requested_computation;
-	int operation_size;
-	int send_operation;
+    int n1;
+    int n2;
+    char operation;
 
-	int n1;
-	int n2;
-	char operation;
+    do
+    {
+        fflush(stdin);
+        printf("Enter the operation in this format: operator[+,-,x,\], first number[integer], second number[integer]\n");
+        printf("Enter the operator: ");
+        scanf(" %c", &operation);
+        printf("\nEnter the first number: ");
+        scanf("%d", &n1);
+        printf("\nEnter the second number: ");
+        scanf("%d", &n2);
 
-	do
-	{
-		fflush(stdin);
-		printf("Enter the operation in this format: operator[+,-,x,\], first number[integer], second number[integer]\n");
-		printf("Enter the operator: ");
-		scanf(" %c", &operation);
-		printf("\nEnter the first number: ");
-		scanf("%d", &n1);
-		printf("\nEnter the second number: ");
-		scanf("%d", &n2);
+        while (correct_operation(operation) == -1)
+        {
+            printf("Not valid operation, please enter one of the following simbols\n- + , sum\n- , difference\n-x , multiplication\n-/ , division \n");
+            scanf(" %c", &operation);
+        }
 
-		while (correct_operation(operation) == -1)
-		{
-			printf("Not valid operation, please enter one of the following simbols\n- + , sum\n- , difference\n-x , multiplication\n-/ , division \n");
-			scanf(" %c", &operation);
-		}
-		requested_computation.operator_1 = n1;
-		requested_computation.operator_2 = n2;
-		requested_computation.operation = operation;
+        if (operation == '=')
+        {
+            break;
+        }
 
-		operation_size = (int)sizeof(requested_computation);
+        requested_computation.operator_1 = n1;
+        requested_computation.operator_2 = n2;
+        requested_computation.operation = operation;
 
-		// la send da problemi
-		send_operation = send(client_socket, (math_message *)&requested_computation, operation_size, 0);
+        operation_size = (int)sizeof(requested_computation);
 
-		printf("s: %d", send_operation);
-		if (send_operation < 0)
-		{
-			printf("send() operation failed.\n");
-			closesocket(client_socket);
-			clearwinsock();
-			getchar();
-			return -1;
-		}
-		printf("\n");
+        // la send da problemi
+        send_operation = send(client_socket, (math_message *)&requested_computation, operation_size, 0);
 
-		float result_rcvd;
-		int result_size;
-		int server_response;
+        if (send_operation < 0)
+        {
+            printf("send() operation failed.\n");
+            closesocket(client_socket);
+            clearwinsock();
+            getchar();
+            return -1;
+        }
+        printf("\n");
 
-		result_size = (int)sizeof(float);
-		printf("ok");
-		server_response = recv(client_socket, (float *)&result_rcvd, result_size, 0);
+        float result_rcvd;
+        int result_size;
+        int server_response;
 
-		printf("sr: %d", server_response);
+        result_size = (int)sizeof(float);
+        server_response = recv(client_socket, (float *)&result_rcvd, result_size, 0);
 
-		if (server_response <= 0)
-		{
-			printf("recv() failed.\n");
-			closesocket(client_socket);
-			clearwinsock();
-			getchar();
-			return -1;
-		}
-		printf("%d %c %d = %.2f\n", n1, operation, n2, result_rcvd);
+        if (server_response <= 0)
+        {
+            printf("recv() failed.\n");
+            closesocket(client_socket);
+            clearwinsock();
+            getchar();
+            return -1;
+        }
+        printf("%d %c %d = %.2f\n", n1, operation, n2, result_rcvd);
 
-	} while (1);
+    } while (1);
 
-	printf("Close connection.\n");
-	closesocket(client_socket);
-	clearwinsock();
-	getchar();
+    printf("Close connection.\n");
+    closesocket(client_socket);
+    clearwinsock();
+    getchar();
 
-	return 0;
+    return 0;
 }

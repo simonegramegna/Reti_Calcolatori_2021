@@ -18,7 +18,6 @@
 #endif
 
 #define PROTOPORT 27015 // defualt protocol number
-#define BUFFERSIZE 512  // defualt buffer size
 #define QLEN 6          // length of queue of waiting clients
 
 void clearwinsock()
@@ -91,22 +90,22 @@ int main(int arcg, char **argv)
     int client_socket;
     int client_size;
 
+    client_size = sizeof(client_address);
+    client_socket = accept(server_socket,
+                           (struct sockaddr *)&client_address, &client_size);
+
+    if (client_socket < 0)
+    {
+        printf("accept() failed.\n");
+        closesocket(client_socket);
+        clearwinsock();
+        getchar();
+        return -1;
+    }
+    printf("Connection established with: %s\n", inet_ntoa(client_address.sin_addr));
+
     for (;;)
     {
-        client_size = sizeof(client_address);
-        client_socket = accept(server_socket,
-                               (struct sockaddr *)&client_address, &client_size);
-
-        if (client_socket < 0)
-        {
-            printf("accept() failed.\n");
-            closesocket(client_socket);
-            clearwinsock();
-            getchar();
-            return -1;
-        }
-
-        printf("Connection established with: %s\n", inet_ntoa(client_address.sin_addr));
         int information_rcvd;
         int message_size;
         math_message message_rcvd;
@@ -162,7 +161,6 @@ int main(int arcg, char **argv)
         result_size = (int)sizeof(float);
         result_sent = send(client_socket, (float *)&computed_value, result_size, 0);
         printf("\ncomputed values: %f\n", computed_value);
-        fflush(stdin);
 
         if (result_sent < 0)
         {
