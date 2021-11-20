@@ -27,14 +27,15 @@ void clearwinsock()
     WSACleanup();
 #endif
 }
-
-void convert_message(math_message* msg_received){
+/*
+void convert_message(math_message *msg_received)
+{
 
     msg_received->operation = ntohl(msg_received->operation);
     msg_received->n1 = nthol(msg_received->n1);
     msg_received->n2 = nthol(msg_received->n2);
 }
-
+*/
 int main(int argc, char **argv)
 {
     int server_address;
@@ -68,7 +69,6 @@ int main(int argc, char **argv)
 
         if (server_port < 0 || server_port > 65535)
         {
-
             server_port = DEFAULT_PORT;
         }
     }
@@ -98,7 +98,6 @@ int main(int argc, char **argv)
     }
 
     listen_connection = listen(server_socket, QLEN);
-    int n_accept = 0;
 
     if (listen_connection < 0)
     {
@@ -115,17 +114,11 @@ int main(int argc, char **argv)
 
     for (;;)
     {
-
         client_size = sizeof(client_address);
-        client_socket = accept(server_socket,
-                               (struct sockaddr *)&client_address, &client_size);
-
-        n_accept = n_accept + 1;
-        printf("ac: %d", n_accept);
+        client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_size);
 
         if (client_socket < 0)
         {
-            printf("accept() failed.\n");
             continue;
         }
 
@@ -139,11 +132,10 @@ int main(int argc, char **argv)
 
             message_size = (int)sizeof(message_rcvd);
             information_rcvd = recv(client_socket, (math_message *)&message_rcvd, message_size, 0);
-            convert_message(&message_rcvd);
+            //convert_message(&message_rcvd);
 
             if (information_rcvd <= 0)
             {
-                printf("recv() string failed.\n");
                 break;
             }
 
@@ -186,11 +178,9 @@ int main(int argc, char **argv)
 
             if (result_sent < 0)
             {
-                printf("send() failed.\n");
                 break;
             }
         }
-
     }
     clearwinsock();
     closesocket(server_socket);

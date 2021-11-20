@@ -54,7 +54,6 @@ int valid_input(char *user_input)
     {
         valid = 0;
     }
-
     return valid;
 }
 
@@ -87,6 +86,5 @@ math_message get_math_message(char *user_input)
         }
         input_token = strtok(NULL, " ");
     }
-
     return requested_operation;
 }

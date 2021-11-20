@@ -28,13 +28,14 @@ void clearwinsock()
     WSACleanup();
 #endif
 }
-
-void convert_message(math_message* msg_sent){
-
+/*
+void convert_message(math_message *msg_sent)
+{
     msg_sent->operation = htonl(msg_sent->operation);
     msg_sent->n1 = htonl(msg_sent->n1);
     msg_sent->n2 = htonl(msg_sent->n2);
 }
+*/
 
 int main(int argc, char **argv)
 {
@@ -73,8 +74,8 @@ int main(int argc, char **argv)
         address = argv[0];
         port = atoi(argv[1]);
 
-        if(port < 0 || port > 65535){
-
+        if (port < 0 || port > 65535)
+        {
             port = DEFAULT_PORT;
         }
     }
@@ -85,8 +86,7 @@ int main(int argc, char **argv)
     server_address.sin_port = htons(port);
 
     int server_connection;
-    server_connection = connect(client_socket, (struct sockaddr *)&server_address,
-                                (int)sizeof(server_address));
+    server_connection = connect(client_socket, (struct sockaddr *)&server_address, (int)sizeof(server_address));
 
     if (server_connection < 0)
     {
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
         requested_computation = get_math_message(parsed_user_input);
         operation_size = (int)sizeof(requested_computation);
 
-        convert_message(&requested_computation);
+        //convert_message(&requested_computation);
         send_operation = send(client_socket, (math_message *)&requested_computation, operation_size, 0);
 
         if (send_operation < 0)
