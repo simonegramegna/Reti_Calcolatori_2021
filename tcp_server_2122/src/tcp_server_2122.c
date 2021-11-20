@@ -28,6 +28,13 @@ void clearwinsock()
 #endif
 }
 
+void convert_message(math_message* msg_received){
+
+    msg_received->operation = ntohl(msg_received->operation);
+    msg_received->n1 = nthol(msg_received->n1);
+    msg_received->n2 = nthol(msg_received->n2);
+}
+
 int main(int argc, char **argv)
 {
     int server_address;
@@ -101,7 +108,7 @@ int main(int argc, char **argv)
         getchar();
         return -1;
     }
-    
+
     struct sockaddr_in client_address;
     int client_socket;
     int client_size;
@@ -132,6 +139,7 @@ int main(int argc, char **argv)
 
             message_size = (int)sizeof(message_rcvd);
             information_rcvd = recv(client_socket, (math_message *)&message_rcvd, message_size, 0);
+            convert_message(&message_rcvd);
 
             if (information_rcvd <= 0)
             {

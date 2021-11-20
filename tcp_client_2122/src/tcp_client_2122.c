@@ -29,6 +29,13 @@ void clearwinsock()
 #endif
 }
 
+void convert_message(math_message* msg_sent){
+
+    msg_sent->operation = htonl(msg_sent->operation);
+    msg_sent->n1 = htonl(msg_sent->n1);
+    msg_sent->n2 = htonl(msg_sent->n2);
+}
+
 int main(int argc, char **argv)
 {
 #ifdef WIN32
@@ -116,6 +123,8 @@ int main(int argc, char **argv)
         }
         requested_computation = get_math_message(parsed_user_input);
         operation_size = (int)sizeof(requested_computation);
+
+        convert_message(&requested_computation);
         send_operation = send(client_socket, (math_message *)&requested_computation, operation_size, 0);
 
         if (send_operation < 0)

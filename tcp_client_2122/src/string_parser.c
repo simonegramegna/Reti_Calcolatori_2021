@@ -42,7 +42,7 @@ int valid_input(char *user_input)
             int str_num;
             str_num = atoi(input_token);
 
-            if (str_num == 0 && strlen(input_token) == 1 && input_token[0] == '0')
+            if (str_num == 0 && strlen(input_token) != 1 && input_token[0] != '0')
             {
                 valid = 0;
             }
