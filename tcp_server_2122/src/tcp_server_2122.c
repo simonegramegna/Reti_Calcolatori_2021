@@ -19,7 +19,7 @@
 
 #define DEFAULT_ADDR "127.0.0.1"
 #define DEFAULT_PORT 27015
-#define QLEN 6          // length of queue of waiting clients
+#define QLEN 5
 
 void clearwinsock()
 {
@@ -28,7 +28,7 @@ void clearwinsock()
 #endif
 }
 
-int main(int arcg, char **argv)
+int main(int argc, char **argv)
 {
     int server_address;
     int server_port;
@@ -53,6 +53,18 @@ int main(int arcg, char **argv)
     server_address = DEFAULT_ADDR;
     server_port = DEFAULT_PORT;
     server_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    if (argc == 2)
+    {
+        server_address = argv[0];
+        server_port = atoi(argv[1]);
+
+        if (server_port < 0 || server_port > 65535)
+        {
+
+            server_port = DEFAULT_PORT;
+        }
+    }
 
     if (server_socket < 0)
     {
@@ -79,6 +91,7 @@ int main(int arcg, char **argv)
     }
 
     listen_connection = listen(server_socket, QLEN);
+    int n_accept = 0;
 
     if (listen_connection < 0)
     {
@@ -88,88 +101,88 @@ int main(int arcg, char **argv)
         getchar();
         return -1;
     }
-
+    
     struct sockaddr_in client_address;
     int client_socket;
     int client_size;
 
-    client_size = sizeof(client_address);
-    client_socket = accept(server_socket,
-                           (struct sockaddr *)&client_address, &client_size);
-
-    if (client_socket < 0)
-    {
-        printf("accept() failed.\n");
-        closesocket(client_socket);
-        clearwinsock();
-        getchar();
-        return -1;
-    }
-    printf("Connection established with: %s\n", inet_ntoa(client_address.sin_addr));
-
     for (;;)
     {
-        int information_rcvd;
-        int message_size;
-        math_message message_rcvd;
 
-        message_size = (int)sizeof(message_rcvd);
-        information_rcvd = recv(client_socket, (math_message *)&message_rcvd, message_size, 0);
+        client_size = sizeof(client_address);
+        client_socket = accept(server_socket,
+                               (struct sockaddr *)&client_address, &client_size);
 
-        if (information_rcvd <= 0)
+        n_accept = n_accept + 1;
+        printf("ac: %d", n_accept);
+
+        if (client_socket < 0)
         {
-            printf("recv() string failed.\n");
-            closesocket(server_socket);
-            clearwinsock();
-            getchar();
-            return -1;
-        }
-
-        int n1;
-        int n2;
-        float computed_value;
-        char operation;
-
-        n1 = message_rcvd.n1;
-        n2 = message_rcvd.n2;
-        operation = message_rcvd.operation;
-
-        switch (operation)
-        {
-        case '+':
-            computed_value = (float)add(n1, n2);
-            break;
-
-        case '-':
-            computed_value = (float)diff(n1, n2);
-            break;
-
-        case 'x':
-
-            computed_value = (float)mult(n1, n2);
-            break;
-
-        case '/':
-            computed_value = division(n1, n2);
-            break;
-        default:
+            printf("accept() failed.\n");
             continue;
         }
 
-        int result_sent;
-        int result_size;
+        printf("Connection established with: %s\n", inet_ntoa(client_address.sin_addr));
 
-        result_size = (int)sizeof(float);
-        result_sent = send(client_socket, (float *)&computed_value, result_size, 0);
-
-        if (result_sent < 0)
+        for (;;)
         {
-            printf("send() stringhe modificate failed.\n");
-            closesocket(result_sent);
-            clearwinsock();
-            getchar();
-            return -1;
+            int information_rcvd;
+            int message_size;
+            math_message message_rcvd;
+
+            message_size = (int)sizeof(message_rcvd);
+            information_rcvd = recv(client_socket, (math_message *)&message_rcvd, message_size, 0);
+
+            if (information_rcvd <= 0)
+            {
+                printf("recv() string failed.\n");
+                break;
+            }
+
+            int n1;
+            int n2;
+            float computed_value;
+            char operation;
+
+            n1 = message_rcvd.n1;
+            n2 = message_rcvd.n2;
+            operation = message_rcvd.operation;
+
+            switch (operation)
+            {
+            case '+':
+                computed_value = (float)add(n1, n2);
+                break;
+
+            case '-':
+                computed_value = (float)diff(n1, n2);
+                break;
+
+            case 'x':
+
+                computed_value = (float)mult(n1, n2);
+                break;
+
+            case '/':
+                computed_value = division(n1, n2);
+                break;
+            default:
+                continue;
+            }
+
+            int result_sent;
+            int result_size;
+
+            result_size = (int)sizeof(float);
+            result_sent = send(client_socket, (float *)&computed_value, result_size, 0);
+
+            if (result_sent < 0)
+            {
+                printf("send() failed.\n");
+                break;
+            }
         }
+
     }
     clearwinsock();
     closesocket(server_socket);

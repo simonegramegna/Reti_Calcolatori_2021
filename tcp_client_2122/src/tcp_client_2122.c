@@ -65,6 +65,11 @@ int main(int argc, char **argv)
     {
         address = argv[0];
         port = atoi(argv[1]);
+
+        if(port < 0 || port > 65535){
+
+            port = DEFAULT_PORT;
+        }
     }
 
     memset(&server_address, 0, sizeof(server_address));
