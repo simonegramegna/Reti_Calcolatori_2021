@@ -107,12 +107,20 @@ int main(int argc, char **argv)
     {
         printf("Enter the operation in this format: operator[+,-,x,\\], first number[integer], second number[integer], press = to quit\n");
         gets(user_input);
+        /**
+         * sostituire per l'input
+         * fgets(user_input, DIM_INPUT, stdin);
+         */
         strcpy(parsed_user_input, user_input);
 
         while (valid_input(user_input) == 0)
         {
             printf("Input NOT valid, please enter again the operation in this format: operator[+,-,x,\\], first number[integer], second number[integer], press = to quit\n");
             gets(user_input);
+            /**
+         * sostituire per l'input
+         * fgets(user_input, DIM_INPUT, stdin);
+         */
             strcpy(parsed_user_input, user_input);
         }
 
