@@ -8,8 +8,7 @@
 #define PLUS 43
 #define MINUS 45
 
-//this function checks if the inputs are valid
-
+// checks if the inputs are valid
 int check_limits(int num)
 {
     int check;
@@ -30,7 +29,7 @@ int check_limits(int num)
     return check;
 }
 
-//this function checks if only numbers are present
+// checks if string contains only numbers
 int contain_only_numbers(char *str)
 {
     int i;
@@ -60,8 +59,7 @@ int contain_only_numbers(char *str)
     return contain_numbers;
 }
 
-//this function checks if the integer is valid
-
+// checks if the integer is valid
 int is_valid_integer(char *str)
 {
     int valid;
@@ -84,8 +82,7 @@ int is_valid_integer(char *str)
     return valid;
 }
 
-//this function checks  if the operation is correct
-
+// checks  if the operation is correct
 int correct_operation(char operator)
 {
     int correct;
@@ -97,8 +94,6 @@ int correct_operation(char operator)
     }
     return correct;
 }
-
-//this function checks  if the user input is valid
 
 int valid_input(char *user_input)
 {

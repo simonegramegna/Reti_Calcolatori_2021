@@ -39,17 +39,8 @@ void convert_message(math_message *msg_received)
 }
 */
 
-/*
-char convert_float_to_string(float f){
-	 float x=f;
+// gcvt(num, 6, str);
 
-	 char buf[50];
-
-	 gcvt(x, 6, buf);
-
-return buf;
-  }
- */
 int main(int argc, char **argv)
 {
     int server_address;
@@ -60,7 +51,6 @@ int main(int argc, char **argv)
     int listen_connection;
 
 //Initialize Winsock
-
 #ifdef WIN32
 
     WSADATA wsa_data;
@@ -97,13 +87,12 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    memset(&localaddress, 0, sizeof(localaddress)); // ensures that extra bytes contain 0
+    memset(&localaddress, 0, sizeof(localaddress)); 
     localaddress.sin_family = AF_INET;
     localaddress.sin_addr.s_addr = inet_addr(server_address);
-    localaddress.sin_port = htons(server_port);  /* converts values between the host and
-													network byte order. Specifically, htons() converts 16-bit quantities
-													from host byte order to network byte order. */
+    localaddress.sin_port = htons(server_port); 
 
+    // binds socket to the address
     bind_socket = bind(server_socket, (struct sockaddr *)&localaddress,
                        sizeof(localaddress));
 
@@ -115,8 +104,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-//listening socket setting
-
+    //listening socket setting
     listen_connection = listen(server_socket, QLEN);
 
     if (listen_connection < 0)
@@ -128,17 +116,16 @@ int main(int argc, char **argv)
         return -1;
     }
 
-//accept a new connection
-
-    struct sockaddr_in client_address; // structure for the client address
-    int client_socket; // socket descriptor for the client
-    int client_size; // the size of the client address
+    //accept a new connection
+    struct sockaddr_in client_address; 
+    int client_socket;                 
+    int client_size;                   
 
     for (;;)
     {
         client_size = sizeof(client_address); // set the size of the client address
         client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_size);
-
+        
         if (client_socket < 0)
         {
             continue;
@@ -205,7 +192,7 @@ int main(int argc, char **argv)
         }
     }
     clearwinsock();
-    closesocket(server_socket); //closes the server socket
+    closesocket(server_socket); 
     getchar();
 
     return 0;

@@ -1,8 +1,7 @@
 #ifndef MATH_MESSAGE_H_
 #define MATH_MESSAGE_H_
 
-//structure that defines the calculation of operations
-
+// data type that defines data to send to the server
 typedef struct
 {
     char operation;
