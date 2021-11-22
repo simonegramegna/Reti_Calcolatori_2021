@@ -21,6 +21,8 @@
 #define DEFAULT_PORT 27015
 #define QLEN 5
 
+//clear the cache
+
 void clearwinsock()
 {
 #ifdef WIN32
@@ -44,6 +46,8 @@ int main(int argc, char **argv)
     struct sockaddr_in localaddress;
     int bind_socket;
     int listen_connection;
+
+//Initialize Winsock
 
 #ifdef WIN32
 
@@ -81,10 +85,12 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    memset(&localaddress, 0, sizeof(localaddress));
+    memset(&localaddress, 0, sizeof(localaddress)); // ensures that extra bytes contain 0
     localaddress.sin_family = AF_INET;
     localaddress.sin_addr.s_addr = inet_addr(server_address);
-    localaddress.sin_port = htons(server_port);
+    localaddress.sin_port = htons(server_port);  /* converts values between the host and
+													network byte order. Specifically, htons() converts 16-bit quantities
+													from host byte order to network byte order. */
 
     bind_socket = bind(server_socket, (struct sockaddr *)&localaddress,
                        sizeof(localaddress));
@@ -97,6 +103,8 @@ int main(int argc, char **argv)
         return -1;
     }
 
+//listening socket setting
+
     listen_connection = listen(server_socket, QLEN);
 
     if (listen_connection < 0)
@@ -108,13 +116,15 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    struct sockaddr_in client_address;
-    int client_socket;
-    int client_size;
+//accept a new connection
+
+    struct sockaddr_in client_address; // structure for the client address
+    int client_socket; // socket descriptor for the client
+    int client_size; // the size of the client address
 
     for (;;)
     {
-        client_size = sizeof(client_address);
+        client_size = sizeof(client_address); // set the size of the client address
         client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_size);
 
         if (client_socket < 0)
@@ -183,7 +193,7 @@ int main(int argc, char **argv)
         }
     }
     clearwinsock();
-    closesocket(server_socket);
+    closesocket(server_socket); //closes the server socket
     getchar();
 
     return 0;

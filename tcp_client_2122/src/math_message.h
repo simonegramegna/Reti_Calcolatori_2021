@@ -1,6 +1,8 @@
 #ifndef MATH_MESSAGE_H_
 #define MATH_MESSAGE_H_
 
+//structure that defines the calculation of operations
+
 typedef struct
 {
     char operation;
