@@ -38,6 +38,18 @@ void convert_message(math_message *msg_received)
     msg_received->n2 = nthol(msg_received->n2);
 }
 */
+
+/*
+char convert_float_to_string(float f){
+	 float x=f;
+
+	 char buf[50];
+
+	 gcvt(x, 6, buf);
+
+return buf;
+  }
+ */
 int main(int argc, char **argv)
 {
     int server_address;

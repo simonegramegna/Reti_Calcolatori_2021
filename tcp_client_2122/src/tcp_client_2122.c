@@ -30,14 +30,25 @@ void clearwinsock()
 	WSACleanup();
 #endif
 }
-/*
+
 void convert_message(math_message *msg_sent)
 {
     msg_sent->operation = htonl(msg_sent->operation);
     msg_sent->n1 = htonl(msg_sent->n1);
     msg_sent->n2 = htonl(msg_sent->n2);
 }
- */
+
+
+void convert_float_to_string(float *f)
+{
+	float f=f*;
+
+}
+
+
+
+
+
 
 int main(int argc, char **argv)
 {
