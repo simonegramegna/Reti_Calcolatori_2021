@@ -41,7 +41,11 @@ int main(int argc, char **argv)
     int bind_socket;
     int listen_connection;
 
-// Initialize Winsock
+/*
+* All Winsock applications must be initialized to make sure that the
+* sockets windows are supported by the system.
+* To initialize Winsock, an element of type WSADATA must be created.
+*/
 #ifdef WIN32
 
     WSADATA wsa_data;
