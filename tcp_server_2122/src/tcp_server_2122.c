@@ -5,41 +5,32 @@
 #include "math_operations.h"
 #include "math_message.h"
 
-// socket libraries
 #ifdef WIN32
-
+// ms-windows socket library
 #include <winsock.h>
 #else
 
 #define closesocket close
+// unix/Linux socket libraries
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #endif
 
+// default port and address
 #define DEFAULT_ADDR "127.0.0.1"
 #define DEFAULT_PORT 27015
+
+// queue length of clients
 #define QLEN 5
 
 //clear the cache
-
 void clearwinsock()
 {
 #ifdef WIN32
     WSACleanup();
 #endif
 }
-/*
-void convert_message(math_message *msg_received)
-{
-
-    msg_received->operation = ntohl(msg_received->operation);
-    msg_received->n1 = nthol(msg_received->n1);
-    msg_received->n2 = nthol(msg_received->n2);
-}
-*/
-
-// gcvt(num, 6, str);
 
 int main(int argc, char **argv)
 {
@@ -50,7 +41,7 @@ int main(int argc, char **argv)
     int bind_socket;
     int listen_connection;
 
-//Initialize Winsock
+// Initialize Winsock
 #ifdef WIN32
 
     WSADATA wsa_data;
@@ -68,6 +59,7 @@ int main(int argc, char **argv)
     server_port = DEFAULT_PORT;
     server_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
+    // gets address and port to connect from command line if there are two arguments
     if (argc == 2)
     {
         server_address = argv[0];
@@ -104,7 +96,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    //listening socket setting
+    // listens incoming connections
     listen_connection = listen(server_socket, QLEN);
 
     if (listen_connection < 0)
@@ -123,7 +115,10 @@ int main(int argc, char **argv)
 
     for (;;)
     {
-        client_size = sizeof(client_address); // set the size of the client address
+        // set the size of the client address
+        client_size = sizeof(client_address);
+
+        // accepts the connection from client
         client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_size);
         
         if (client_socket < 0)
@@ -140,8 +135,9 @@ int main(int argc, char **argv)
             math_message message_rcvd;
 
             message_size = (int)sizeof(message_rcvd);
+
+            // gets data from client
             information_rcvd = recv(client_socket, (math_message *)&message_rcvd, message_size, 0);
-            //convert_message(&message_rcvd);
 
             if (information_rcvd <= 0)
             {
@@ -183,6 +179,8 @@ int main(int argc, char **argv)
             int result_size;
 
             result_size = (int)sizeof(float);
+
+            // sends data to client
             result_sent = send(client_socket, (float *)&computed_value, result_size, 0);
 
             if (result_sent < 0)

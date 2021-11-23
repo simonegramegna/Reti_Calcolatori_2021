@@ -5,6 +5,7 @@
 
 #include "string_parser.h"
 
+// ascii codes of '+' and '-'
 #define PLUS 43
 #define MINUS 45
 
@@ -14,6 +15,7 @@ int check_limits(int num)
     int check;
     check = 0;
 
+    // checks if the numbers is in the range of integers
     if (num > 0 && num > INT_MAX - num)
     {
         check = 1;
@@ -25,7 +27,6 @@ int check_limits(int num)
             check = 1;
         }
     }
-
     return check;
 }
 
@@ -42,6 +43,7 @@ int contain_only_numbers(char *str)
     {
         if (!isdigit(str[i]))
         {
+            // only '+' and '-' are allowed
             if ((str[i] != MINUS && str[i] != PLUS))
             {
                 contain_numbers = 0;
@@ -52,7 +54,6 @@ int contain_only_numbers(char *str)
                 contain_numbers = 0;
             }
         }
-
         i++;
     }
 
@@ -68,6 +69,8 @@ int is_valid_integer(char *str)
     if (contain_only_numbers(str) == 1)
     {
         int str_num;
+
+        // converts string to number
         str_num = atoi(str);
 
         if (check_limits(str_num) == 1)
@@ -88,6 +91,7 @@ int correct_operation(char operator)
     int correct;
     correct = 0;
 
+    // allowed operators
     if (operator== '=' || operator== 'x' || operator== '+' || operator== '/' || operator== '-')
     {
         correct = 1;
@@ -103,6 +107,8 @@ int valid_input(char *user_input)
 
     valid = 1;
     token_counter = 0;
+
+    // tokenizes the string
     input_token = strtok(user_input, " ");
 
     while (input_token != NULL && valid == 1)
@@ -123,6 +129,7 @@ int valid_input(char *user_input)
         input_token = strtok(NULL, " ");
     }
 
+    // only one or three tokens are allowed
     if (token_counter == 0 || token_counter == 2 || token_counter > 3)
     {
         valid = 0;
@@ -137,17 +144,21 @@ math_message get_math_message(char *user_input)
     char *input_token;
 
     token_counter = 0;
+
+    // tokenizes the string
     input_token = strtok(user_input, " ");
 
     while (input_token != NULL)
     {
         token_counter = token_counter + 1;
 
+        // first token is the operator
         if (token_counter == 1)
         {
             requested_operation.operation = input_token[0];
         }
 
+        // the second and third token are numbers
         if (token_counter == 2)
         {
             requested_operation.n1 = atoi(input_token);

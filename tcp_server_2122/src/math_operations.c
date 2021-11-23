@@ -20,6 +20,7 @@ int mult(int a, int b)
 
 float division(int a, int b)
 {
+    // if denominator is zero, returns maximum real value
     if (b == 0)
     {
         return FLT_MAX;
