@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "math_message.h"
+#include "string_parser.h"
 
 #if defined WIN32
 #include <winsock.h>
@@ -28,13 +29,14 @@
 //#define PROTOPORT 27015
 
 //clear Windows cache
-void clearwinsock() {
+void clearwinsock()
+{
 #if defined WIN32
 	WSACleanup();
 #endif
 }
 
-int main(int argc, char **argv[])
+int main(int argc, char **argv)
 {
 
 /*
@@ -53,23 +55,24 @@ int main(int argc, char **argv[])
 	}
 #endif
 
-//CREAZIONE DELLA CLIENT SOCKET
+	//CREAZIONE DELLA CLIENT SOCKET
 	int clientsocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (clientsocket < 0) {
+	if (clientsocket < 0)
+	{
 		printf("Socket creation failed.\n");
 		closesocket(clientsocket);
 		clearwinsock();
 		system("pause");
 		return -1;
 	}
-//COSTRUZIONE DELL'INDIRIZZO DEL SERVER DA CUI IL CLIENT DEVE INVIARE MESSAGGI
+	//COSTRUZIONE DELL'INDIRIZZO DEL SERVER DA CUI IL CLIENT DEVE INVIARE MESSAGGI
 	struct sockaddr_in localaddress;
 	memset(&localaddress, 0, sizeof(localaddress));
 	localaddress.sin_family = AF_INET;
 	localaddress.sin_addr.s_addr = inet_addr("127.0.0.1");
-	localaddress.sin_port = htons("127.0.0.1");
+	localaddress.sin_port = htons(DEFAULT_PORT);
 
-math_message requested_computation;
+	math_message requested_computation;
 	int operation_size;
 	int send_operation;
 	char user_input[DIM_INPUT];
@@ -77,16 +80,16 @@ math_message requested_computation;
 
 	for (;;)
 	{
-        float result_rcvd;
+		float result_rcvd;
 		int result_size;
 		int server_response;
 
-        // gets user input
+		// gets user input
 		printf("Enter the operation in this format: operator[+,-,x,\\], first number[integer], second number[integer], press = to quit\n");
 		gets(user_input);
 		strcpy(parsed_user_input, user_input);
 
-        // repeats while the input is not valid
+		// repeats while the input is not valid
 		while (valid_input(user_input) == 0)
 		{
 			printf("Input NOT valid, please enter again the operation in this format: operator[+,-,x,\\], first number[integer], second number[integer], press = to quit\n");
@@ -94,7 +97,7 @@ math_message requested_computation;
 			strcpy(parsed_user_input, user_input);
 		}
 
-        // quit if '=' is pressed 
+		// quit if '=' is pressed
 		if (user_input[0] == '=')
 		{
 			printf("Exiting...\n");
@@ -105,8 +108,8 @@ math_message requested_computation;
 		requested_computation = get_math_message(parsed_user_input);
 		operation_size = (int)sizeof(requested_computation);
 
-        // sends the data type to the server
-		int send=sendto(clientsocket,(math_message*)&requested_computation, (int) sizeof(math_message), 0, (struct sockaddr*)&localaddress, sizeof localaddress);
+		// sends the data type to the server
+		send_operation = sendto(clientsocket, (math_message *)&requested_computation, (int)operation_size, 0, (struct sockaddr *)&localaddress, sizeof localaddress);
 
 		if (send_operation < 0)
 		{
@@ -117,8 +120,7 @@ math_message requested_computation;
 			return -1;
 		}
 
-
-	    // server response
+		// server response
 		result_size = (int)sizeof(float);
 		server_response = recv(clientsocket, (float *)&result_rcvd, result_size, 0);
 
@@ -130,14 +132,13 @@ math_message requested_computation;
 			getchar();
 			return -1;
 		}
-        // displays the result of the computation
+		// displays the result of the computation
 		printf("\n%d %c %d = %.2f\n", requested_computation.n1, requested_computation.operation, requested_computation.n2, result_rcvd);
 	}
 
-//main end
+	//main end
 	closesocket(clientsocket);
 	clearwinsock();
 	system("pause");
 	return 0;
 } // main end
-
