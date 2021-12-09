@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math_message.h>
+#include <string.h>
+
+#include "math_message.h"
+#include "math_operations.h"
 
 #ifdef WIN32
 #include <winsock.h>
 #else
-#include <string.h>
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -13,6 +16,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #define closesocket close
+
 #endif
 
 void clearwinsock()
@@ -44,7 +48,7 @@ int main()
 
 	if (server_socket < 0)
 	{
-		errorHandler("socket server creation failed.\n");
+		printf("socket server creation failed.\n");
 		closesocket(server_socket);
 		clearwinsock();
 		getchar();
@@ -62,7 +66,7 @@ int main()
 	if (bind_socket < 0)
 	{
 
-		errorHandler("bind failed.\n");
+		printf("bind failed.\n");
 		closesocket(server_socket);
 		clearwinsock();
 		getchar();
@@ -81,7 +85,7 @@ int main()
 		client_size = sizeof(client_addr);
 
 		message_size = (int)sizeof(message_rcvd);
-		information_rcvd = recvfrom(server_socket, (math_message *)&message_rcvd, (int)sizeof(math_message), 0, (struct sockaddr *)&client_addr, (int *)&client_size);
+		information_rcvd = recvfrom(server_socket, (math_message *)&message_rcvd, (int)message_size, 0, (struct sockaddr *)&client_addr, (int)client_size);
 
 		if (information_rcvd <= 0)
 		{
@@ -136,7 +140,7 @@ int main()
 		int result_size;
 
 		result_size = (int)sizeof(float);
-		result_sent = sendto(server_socket, (float *)&computed_value, (int)result_size, 0, (struct sockaddr *)&client_addr, (int *)&client_size);
+		result_sent = sendto(server_socket, (float *)&computed_value, (int)result_size, 0, (struct sockaddr *)&client_addr, (int)client_size);
 
 		if (result_sent != result_size)
 		{
