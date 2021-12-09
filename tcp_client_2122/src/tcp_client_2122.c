@@ -42,18 +42,18 @@ int main(int argc, char **argv)
  * sockets windows are supported by the system. 
  * To initialize Winsock, an element of type WSADATA must be created.
 */
-#ifdef WIN32
-	WSADATA wsaData;
-	int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
-	if (result != 0)
-	{
+#if defined WIN32
+	// Initialize Winsock
+	WSADATA wsa_data;
+	int iResult = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+	if (iResult != 0) {
 		printf("Error at WSAStartup().\n");
 		system("pause");
 		return -1;
 	}
 #endif
 
-	// creation of the client socket
+// creation of the client socket
 	int port;
 	int address;
 	int client_socket;
