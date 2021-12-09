@@ -26,7 +26,7 @@ void clearwinsock()
 #endif
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 #ifdef WIN32
 	// Initialize Winsock
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 
 	int server_socket;
 	int bind_socket;
-	struct sockaddr_in local_addr;
+	struct sockaddr_in server_addr;
 
 	server_socket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
@@ -55,13 +55,13 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	memset(&local_addr, 0, sizeof(local_addr));
-	local_addr.sin_family = AF_INET;
-	local_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	local_addr.sin_port = htons(27015);
+	memset(&server_addr, 0, sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	server_addr.sin_port = htons(27015);
 
-	bind_socket = bind(server_socket, (struct sockaddr *)&local_addr,
-					   sizeof(local_addr));
+	bind_socket = bind(server_socket, (struct sockaddr *)&server_addr,
+					   sizeof(server_addr));
 
 	if (bind_socket < 0)
 	{
@@ -74,6 +74,8 @@ int main(int argc, char** argv)
 	}
 	struct sockaddr_in client_addr;
 	struct hostent *host_client;
+
+	memset(&client_addr, 0, sizeof(client_addr));
 
 	for (;;)
 	{

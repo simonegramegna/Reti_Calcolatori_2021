@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 	if (result != 0)
 	{
 		printf("Error at WSAStartup().\n");
-		system("pause");
+		getchar();
 		return -1;
 	}
 #endif
@@ -62,15 +62,15 @@ int main(int argc, char **argv)
 		printf("Socket creation failed.\n");
 		closesocket(clientsocket);
 		clearwinsock();
-		system("pause");
+		getchar();
 		return -1;
 	}
 	//COSTRUZIONE DELL'INDIRIZZO DEL SERVER DA CUI IL CLIENT DEVE INVIARE MESSAGGI
-	struct sockaddr_in localaddress;
-	memset(&localaddress, 0, sizeof(localaddress));
-	localaddress.sin_family = AF_INET;
-	localaddress.sin_addr.s_addr = inet_addr("127.0.0.1");
-	localaddress.sin_port = htons(DEFAULT_PORT);
+	struct sockaddr_in client_addr;
+	memset(&client_addr, 0, sizeof(client_addr));
+	client_addr.sin_family = AF_INET;
+	client_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	client_addr.sin_port = htons(DEFAULT_PORT);
 
 	math_message requested_computation;
 	int operation_size;
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 		operation_size = (int)sizeof(requested_computation);
 
 		// sends the data type to the server
-		send_operation = sendto(clientsocket, (math_message *)&requested_computation, (int)operation_size, 0, (struct sockaddr *)&localaddress, sizeof localaddress);
+		send_operation = sendto(clientsocket, (math_message *)&requested_computation, (int)operation_size, 0, (struct sockaddr *)&client_addr, sizeof client_addr);
 
 		if (send_operation < 0)
 		{
@@ -139,6 +139,5 @@ int main(int argc, char **argv)
 	//main end
 	closesocket(clientsocket);
 	clearwinsock();
-	system("pause");
+	getchar();
 	return 0;
-} // main end
