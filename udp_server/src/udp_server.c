@@ -19,6 +19,8 @@
 
 #endif
 
+#define DIM_INPUT 30
+
 void clearwinsock()
 {
 #if defined WIN32
@@ -80,12 +82,13 @@ int main()
         int client_addr_len;
         int information_rcvd;
         int message_size;
-        math_message message_rcvd;
+        //math_message message_rcvd;
+        char operation_rcvd[DIM_INPUT];
 
         client_addr_len = sizeof(client_addr);
-        message_size = (int)sizeof(message_rcvd);
+        //message_size = (int)sizeof(message_rcvd);
 
-        information_rcvd = recvfrom(server_socket, (math_message *)&message_rcvd, (int)message_size, 0, (struct sockaddr *)&client_addr, &client_addr_len);
+        information_rcvd = recvfrom(server_socket, operation_rcvd, DIM_INPUT, 0, (struct sockaddr *)&client_addr, &client_addr_len);
 
         if (information_rcvd <= 0)
         {
@@ -96,6 +99,8 @@ int main()
         printf("connection established with: %s\n",
                inet_ntoa(client_addr.sin_addr));
 
+        printf("Operazione ricevuta: %s\n", operation_rcvd);
+        /*
         int n1;
         int n2;
         float computed_value;
@@ -125,15 +130,16 @@ int main()
             break;
         default:
             continue;
-        }
-
-        int result_sent;
+        }*/
+        /*
+        
         int result_size;
 
-        result_size = (int)sizeof(float);
-        result_sent = sendto(server_socket, (float *)&computed_value, (int)result_size, 0, (struct sockaddr *)&client_addr, client_addr_len);
+        result_size = (int)sizeof(float);*/
+        int result_sent;
+        result_sent = sendto(server_socket, operation_rcvd, DIM_INPUT, 0, (struct sockaddr *)&client_addr, client_addr_len);
 
-        if (result_sent != result_size)
+        if (result_sent != DIM_INPUT)
         {
 
             break;
