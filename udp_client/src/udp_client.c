@@ -45,9 +45,12 @@ int main(int argc, char **argv)
     }
 #endif
 
-    int port = DEFAULT_PORT;
-    char server[HOSTNAME_LEN] = DEFAULT_SERVER;
-    /*
+    int port;
+    port = DEFAULT_PORT;
+
+
+    /*char server[HOSTNAME_LEN] = DEFAULT_SERVER;
+    
     parsed_addr input_addr;
 
     struct hostent *remote_server;
@@ -61,7 +64,7 @@ int main(int argc, char **argv)
         port = input_addr.port;
     }*/
 
-    //CREAZIONE DELLA CLIENT SOCKET
+    // vration of client socket
     int client_socket;
     struct sockaddr_in client_addr;
     struct sockaddr_in server_addr;
@@ -77,12 +80,12 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    // memory allocation for server address
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
     server_addr.sin_port = htons(port);
 
-    math_message requested_computation;
     int operation_size;
     int send_operation;
     char user_input[DIM_INPUT];
@@ -90,9 +93,12 @@ int main(int argc, char **argv)
 
     for (;;)
     {
-        //float result_rcvd;
+        int server_len;
         int result_size;
         int server_response;
+        char result[DIM_INPUT];
+
+        server_len = sizeof(server_addr);
 
         // gets user input
         printf("Enter the operation in this format: operator[+,-,x,\\], first number[integer], second number[integer], press = to quit\n");
@@ -113,8 +119,9 @@ int main(int argc, char **argv)
             printf("Exiting...\n");
             break;
         }
+
         // sends the data type to the server
-        send_operation = sendto(client_socket, parsed_user_input, DIM_INPUT, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
+        send_operation = sendto(client_socket, parsed_user_input, DIM_INPUT, 0, (struct sockaddr *)&server_addr, server_len);
 
         if (send_operation < 0)
         {
@@ -125,8 +132,7 @@ int main(int argc, char **argv)
             return -1;
         }
 
-        char result[DIM_INPUT];
-        int server_len = sizeof(server_addr);
+        // gets response string from server
         server_response = recvfrom(client_socket, result, DIM_INPUT, 0, (struct sockaddr *)&server_addr, &server_len);
 
         if (server_response <= 0)
@@ -141,17 +147,18 @@ int main(int argc, char **argv)
         double num_result;
         math_message printed_message;
 
+        // gets numbers and operator to be printed on screen
         printed_message = get_math_message(parsed_user_input);
+
+        // converts string result into double
         num_result = atof(result);
 
         // displays the result of the computation
         printf("\n%d %c %d = %.2lf\n", printed_message.n1, printed_message.operation, printed_message.n2, num_result);
     }
 
-    //main end
     closesocket(client_socket);
     clearwinsock();
     getchar();
-
     return 0;
 }

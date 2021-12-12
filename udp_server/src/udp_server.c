@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "math_message.h"
-#include "math_operations.h"
 #include "string_parser.h"
+#include "math_operations.h"
 
 #ifdef WIN32
 #include <winsock.h>
@@ -49,6 +49,7 @@ int main()
     struct sockaddr_in server_addr;
     struct sockaddr_in client_addr;
 
+    // creates server socket
     server_socket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
     if (server_socket < 0)
@@ -60,6 +61,7 @@ int main()
         return -1;
     }
 
+    // memory allocation for server address
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -77,7 +79,7 @@ int main()
         getchar();
         return -1;
     }
-    printf("waiting for a client message...\n");
+    printf("Waiting for a client message...\n");
 
     for (;;)
     {
@@ -88,8 +90,6 @@ int main()
         char operation_rcvd[DIM_INPUT];
 
         client_addr_len = sizeof(client_addr);
-        //message_size = (int)sizeof(message_rcvd);
-
         information_rcvd = recvfrom(server_socket, operation_rcvd, DIM_INPUT, 0, (struct sockaddr *)&client_addr, &client_addr_len);
 
         if (information_rcvd <= 0)
@@ -105,9 +105,9 @@ int main()
 
         int n1;
         int n2;
-        float computed_value;
         char operation;
-
+        float computed_value;
+        
         n1 = math_operation.n1;
         n2 = math_operation.n2;
         operation = math_operation.operation;
@@ -134,12 +134,13 @@ int main()
             continue;
         }
 
+        int result_sent;
         char computed_value_str[DIM_INPUT];
 
         // converts float to string
         gcvt(computed_value, RESULT_DIGITS, computed_value_str);
 
-        int result_sent;
+        // sends data back to client
         result_sent = sendto(server_socket, computed_value_str, DIM_INPUT, 0, (struct sockaddr *)&client_addr, client_addr_len);
 
         if (result_sent != DIM_INPUT)
@@ -151,6 +152,5 @@ int main()
     closesocket(server_socket);
     clearwinsock();
     getchar();
-
     return 0;
 }
