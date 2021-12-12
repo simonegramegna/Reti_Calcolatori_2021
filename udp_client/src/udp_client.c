@@ -47,6 +47,7 @@ int main(int argc, char **argv)
 
     int port = DEFAULT_PORT;
     char server[HOSTNAME_LEN] = DEFAULT_SERVER;
+    /*
     parsed_addr input_addr;
 
     struct hostent *remote_server;
@@ -58,12 +59,15 @@ int main(int argc, char **argv)
         //printf("Name %s, port %d", input_addr.host_name, input_addr.port);
         strcpy(server, input_addr.host_name);
         port = input_addr.port;
-    }
+    }*/
 
     //CREAZIONE DELLA CLIENT SOCKET
     int client_socket;
+    struct sockaddr_in client_addr;
+    struct sockaddr_in server_addr;
 
     client_socket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
     if (client_socket < 0)
     {
         printf("socket client creation failed.\n");
@@ -73,13 +77,10 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    remote_server = gethostbyname(server);
-
-    struct sockaddr_in client_addr;
-    memset(&client_addr, 0, sizeof(client_addr));
-    client_addr.sin_family = AF_INET;
-    client_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr *)remote_server->h_addr)));
-    client_addr.sin_port = htons(port);
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_addr.sin_port = htons(port);
 
     math_message requested_computation;
     int operation_size;
@@ -117,8 +118,9 @@ int main(int argc, char **argv)
         requested_computation = get_math_message(parsed_user_input);
         operation_size = (int)sizeof(requested_computation);
 
+        strcpy(requested_computation.host_name , server);
         // sends the data type to the server
-        send_operation = sendto(client_socket, &requested_computation, (int)operation_size, 0, (struct sockaddr *)&client_addr, sizeof client_addr);
+        send_operation = sendto(client_socket, &requested_computation, (int)operation_size, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
         if (send_operation < 0)
         {

@@ -26,7 +26,7 @@ void clearwinsock()
 #endif
 }
 
-int main(int argc, char **argv)
+int main()
 {
 #ifdef WIN32
     // Initialize Winsock
@@ -43,6 +43,7 @@ int main(int argc, char **argv)
     int server_socket;
     int bind_socket;
     struct sockaddr_in server_addr;
+    struct sockaddr_in client_addr;
 
     server_socket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
@@ -72,22 +73,19 @@ int main(int argc, char **argv)
         getchar();
         return -1;
     }
-    struct sockaddr_in client_addr;
-    struct hostent *host_client;
-
-    memset(&client_addr, 0, sizeof(client_addr));
-
+    printf("waiting for a client message...\n");
+    
     for (;;)
     {
-        int client_size;
+        int client_addr_len;
         int information_rcvd;
         int message_size;
         math_message message_rcvd;
 
-        client_size = sizeof(client_addr);
-
+        client_addr_len = sizeof(client_addr);
         message_size = (int)sizeof(message_rcvd);
-        information_rcvd = recvfrom(server_socket, (char *)&message_rcvd, (int)message_size, 0, (struct sockaddr *)&client_addr, (int)client_size);
+
+        information_rcvd = recvfrom(server_socket, (math_message *)&message_rcvd, (int)message_size, 0, (struct sockaddr *)&client_addr, &client_addr_len);
 
         if (information_rcvd <= 0)
         {
@@ -97,15 +95,6 @@ int main(int argc, char **argv)
 
         printf("connection established with: %s\n",
                inet_ntoa(client_addr.sin_addr));
-
-        host_client = gethostbyname(message_rcvd.host_name);
-
-        if (host_client == NULL)
-        {
-
-            printf("gethostbyname() faield.\n");
-            break;
-        }
 
         int n1;
         int n2;
@@ -142,7 +131,7 @@ int main(int argc, char **argv)
         int result_size;
 
         result_size = (int)sizeof(float);
-        result_sent = sendto(server_socket, (char *)&computed_value, (int)result_size, 0, (struct sockaddr *)&client_addr, (int)client_size);
+        result_sent = sendto(server_socket, (float *)&computed_value, (int)result_size, 0, (struct sockaddr *)&client_addr, client_addr_len);
 
         if (result_sent != result_size)
         {
