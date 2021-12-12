@@ -113,12 +113,6 @@ int main(int argc, char **argv)
             printf("Exiting...\n");
             break;
         }
-        /*
-        // gets data type to send from the correct input string
-        requested_computation = get_math_message(parsed_user_input);
-        operation_size = (int)sizeof(requested_computation);
-
-        strcpy(requested_computation.host_name , server);*/
         // sends the data type to the server
         send_operation = sendto(client_socket, parsed_user_input, DIM_INPUT, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
@@ -132,9 +126,6 @@ int main(int argc, char **argv)
         }
 
         char result[DIM_INPUT];
-
-        // server response
-        //result_size = (int)sizeof(float);
         int server_len = sizeof(server_addr);
         server_response = recvfrom(client_socket, result, DIM_INPUT, 0, (struct sockaddr *)&server_addr, &server_len);
 
@@ -146,9 +137,15 @@ int main(int argc, char **argv)
             getchar();
             return -1;
         }
-        printf("\nRisposta del server %s", result);
+
+        double num_result;
+        math_message printed_message;
+
+        printed_message = get_math_message(parsed_user_input);
+        num_result = atof(result);
+
         // displays the result of the computation
-        //printf("\n%d %c %d = %.2f\n", requested_computation.n1, requested_computation.operation, requested_computation.n2, result_rcvd);
+        printf("\n%d %c %d = %.2lf\n", printed_message.n1, printed_message.operation, printed_message.n2, num_result);
     }
 
     //main end

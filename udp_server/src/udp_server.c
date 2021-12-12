@@ -4,6 +4,7 @@
 
 #include "math_message.h"
 #include "math_operations.h"
+#include "string_parser.h"
 
 #ifdef WIN32
 #include <winsock.h>
@@ -20,6 +21,7 @@
 #endif
 
 #define DIM_INPUT 30
+#define RESULT_DIGITS 10
 
 void clearwinsock()
 {
@@ -76,13 +78,13 @@ int main()
         return -1;
     }
     printf("waiting for a client message...\n");
-    
+
     for (;;)
     {
         int client_addr_len;
         int information_rcvd;
         int message_size;
-        //math_message message_rcvd;
+        math_message math_operation;
         char operation_rcvd[DIM_INPUT];
 
         client_addr_len = sizeof(client_addr);
@@ -96,19 +98,19 @@ int main()
             break;
         }
 
-        printf("connection established with: %s\n",
+        printf("Connection established with: %s\n",
                inet_ntoa(client_addr.sin_addr));
 
-        printf("Operazione ricevuta: %s\n", operation_rcvd);
-        /*
+        math_operation = get_math_message(operation_rcvd);
+
         int n1;
         int n2;
         float computed_value;
         char operation;
 
-        n1 = message_rcvd.n1;
-        n2 = message_rcvd.n2;
-        operation = message_rcvd.operation;
+        n1 = math_operation.n1;
+        n2 = math_operation.n2;
+        operation = math_operation.operation;
 
         switch (operation)
         {
@@ -130,18 +132,18 @@ int main()
             break;
         default:
             continue;
-        }*/
-        /*
-        
-        int result_size;
+        }
 
-        result_size = (int)sizeof(float);*/
+        char computed_value_str[DIM_INPUT];
+
+        // converts float to string
+        gcvt(computed_value, RESULT_DIGITS, computed_value_str);
+
         int result_sent;
-        result_sent = sendto(server_socket, operation_rcvd, DIM_INPUT, 0, (struct sockaddr *)&client_addr, client_addr_len);
+        result_sent = sendto(server_socket, computed_value_str, DIM_INPUT, 0, (struct sockaddr *)&client_addr, client_addr_len);
 
         if (result_sent != DIM_INPUT)
         {
-
             break;
         }
     }
