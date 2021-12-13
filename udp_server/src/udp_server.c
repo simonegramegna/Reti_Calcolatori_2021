@@ -30,7 +30,7 @@ void clearwinsock()
 #endif
 }
 
-int main()
+int main(int argc, char** argv)
 {
 #ifdef WIN32
     // Initialize Winsock
