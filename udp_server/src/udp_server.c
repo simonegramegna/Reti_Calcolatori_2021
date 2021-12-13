@@ -151,7 +151,7 @@ int main(int argc, char **argv)
             computed_value = (float)mult(n1, n2);
             break;
 
-        case '/':
+        case '\\':
             computed_value = division(n1, n2);
             break;
         default:

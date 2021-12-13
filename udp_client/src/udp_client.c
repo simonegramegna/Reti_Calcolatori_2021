@@ -155,7 +155,7 @@ int main(int argc, char **argv)
         num_result = atof(result);
 
         // displays the result of the computation
-        printf("\nResult got from server: %s, IP: %s : %d %c %d = %.2lf\n", server, inet_ntoa(*in_addr_server), printed_message.n1, printed_message.operation, printed_message.n2, num_result);
+        printf("\nResult got from server: %s, IP: %s : %d %c %d = %.2lf\n\n", server, inet_ntoa(*in_addr_server), printed_message.n1, printed_message.operation, printed_message.n2, num_result);
     }
 
     closesocket(client_socket);
