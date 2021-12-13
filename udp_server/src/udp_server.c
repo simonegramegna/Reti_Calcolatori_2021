@@ -21,7 +21,9 @@
 #endif
 
 #define DIM_INPUT 30
+#define LEN_HOSTNAME 50
 #define RESULT_DIGITS 10
+#define DEFAULT_PORT 27015
 
 void clearwinsock()
 {
@@ -30,7 +32,7 @@ void clearwinsock()
 #endif
 }
 
-int main()
+int main(int argc, char **argv)
 {
 #ifdef WIN32
     // Initialize Winsock
@@ -72,7 +74,6 @@ int main()
 
     if (bind_socket < 0)
     {
-
         printf("bind failed.\n");
         closesocket(server_socket);
         clearwinsock();
@@ -85,7 +86,6 @@ int main()
     {
         int client_addr_len;
         int information_rcvd;
-        int message_size;
         math_message math_operation;
         char operation_rcvd[DIM_INPUT];
 
@@ -98,19 +98,20 @@ int main()
             break;
         }
 
-        printf("Connection established with: %s\n",
-               inet_ntoa(client_addr.sin_addr));
-
         math_operation = get_math_message(operation_rcvd);
 
         int n1;
         int n2;
         char operation;
         float computed_value;
-        
+        struct hostent *client_name;
+
         n1 = math_operation.n1;
         n2 = math_operation.n2;
         operation = math_operation.operation;
+
+        client_name = gethostbyaddr((char *)&client_addr.sin_addr, LEN_HOSTNAME, AF_INET);
+        printf("Requested operation: %c %d %d  from client: %s, IP: %s\n", operation, n1, n2, client_name->h_name, inet_ntoa(client_addr.sin_addr));
 
         switch (operation)
         {

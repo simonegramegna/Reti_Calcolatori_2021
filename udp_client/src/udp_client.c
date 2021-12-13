@@ -34,6 +34,7 @@ int main(int argc, char **argv)
 {
 
 #if defined WIN32
+
     // Initialize Winsock
     WSADATA wsa_data;
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsa_data);
@@ -46,29 +47,31 @@ int main(int argc, char **argv)
 #endif
 
     int port;
-    port = DEFAULT_PORT;
-
-
-    /*char server[HOSTNAME_LEN] = DEFAULT_SERVER;
-    
+    int client_socket;
     parsed_addr input_addr;
-
     struct hostent *remote_server;
+    struct in_addr *in_addr_server;
+    struct sockaddr_in server_addr;
+
+    char server[HOSTNAME_LEN] = DEFAULT_SERVER;
+    port = DEFAULT_PORT;
 
     if (argc == 2)
     {
         get_addr_port(&input_addr, argv[1]);
-
-        //printf("Name %s, port %d", input_addr.host_name, input_addr.port);
         strcpy(server, input_addr.host_name);
         port = input_addr.port;
-    }*/
 
-    // vration of client socket
-    int client_socket;
-    struct sockaddr_in client_addr;
-    struct sockaddr_in server_addr;
+        if (port < 0 || port > 65535)
+        {
+            port = DEFAULT_PORT;
+        }
+    }
 
+    remote_server = gethostbyname(server);
+    in_addr_server = (struct in_addr *)remote_server->h_addr_list[0];
+
+    // creation of client socket
     client_socket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
     if (client_socket < 0)
@@ -83,10 +86,9 @@ int main(int argc, char **argv)
     // memory allocation for server address
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*in_addr_server));
     server_addr.sin_port = htons(port);
 
-    int operation_size;
     int send_operation;
     char user_input[DIM_INPUT];
     char parsed_user_input[DIM_INPUT];
@@ -94,7 +96,6 @@ int main(int argc, char **argv)
     for (;;)
     {
         int server_len;
-        int result_size;
         int server_response;
         char result[DIM_INPUT];
 
@@ -154,7 +155,7 @@ int main(int argc, char **argv)
         num_result = atof(result);
 
         // displays the result of the computation
-        printf("\n%d %c %d = %.2lf\n", printed_message.n1, printed_message.operation, printed_message.n2, num_result);
+        printf("\nResult got from server: %s, IP: %s : %d %c %d = %.2lf\n", server, inet_ntoa(*in_addr_server), printed_message.n1, printed_message.operation, printed_message.n2, num_result);
     }
 
     closesocket(client_socket);
