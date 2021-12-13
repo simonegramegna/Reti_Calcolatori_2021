@@ -49,9 +49,9 @@ int main(int argc, char **argv)
     int port;
     int client_socket;
     parsed_addr input_addr;
-    struct hostent *remote_server;
     struct in_addr *in_addr_server;
     struct sockaddr_in server_addr;
+    struct hostent *remote_server_name;
 
     char server[HOSTNAME_LEN] = DEFAULT_SERVER;
     port = DEFAULT_PORT;
@@ -68,15 +68,15 @@ int main(int argc, char **argv)
         }
     }
 
-    remote_server = gethostbyname(server);
-    in_addr_server = (struct in_addr *)remote_server->h_addr_list[0];
+    remote_server_name = gethostbyname(server);
+    in_addr_server = (struct in_addr *)remote_server_name->h_addr_list[0];
 
     // creation of client socket
     client_socket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
     if (client_socket < 0)
     {
-        printf("socket client creation failed.\n");
+        printf("Socket client creation failed.\n");
         closesocket(client_socket);
         clearwinsock();
         getchar();
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 
         if (send_operation < 0)
         {
-            printf("send() operation failed.\n");
+            printf("sendto() failed.\n");
             closesocket(client_socket);
             clearwinsock();
             getchar();
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
 
         if (server_response <= 0)
         {
-            printf("recv() failed.\n");
+            printf("recvfrom() failed.\n");
             closesocket(client_socket);
             clearwinsock();
             getchar();

@@ -24,6 +24,7 @@
 #define LEN_HOSTNAME 50
 #define RESULT_DIGITS 10
 #define DEFAULT_PORT 27015
+#define DEFAULT_SERVER "calculator.uniba.it"
 
 void clearwinsock()
 {
@@ -46,17 +47,39 @@ int main(int argc, char **argv)
     }
 #endif
 
-    int server_socket;
+    int port;
     int bind_socket;
+    int server_socket;
+    parsed_addr input_addr;
+    struct hostent *server_name;
+    struct in_addr *ip_server_addr;
     struct sockaddr_in server_addr;
     struct sockaddr_in client_addr;
+
+    char server[HOSTNAME_LEN] = DEFAULT_SERVER;
+    port = DEFAULT_PORT;
+
+    if (argc == 2)
+    {
+        get_addr_port(&input_addr, argv[1]);
+        strcpy(server, input_addr.host_name);
+        port = input_addr.port;
+
+        if (port < 0 || port > 65535)
+        {
+            port = DEFAULT_PORT;
+        }
+    }
+
+    server_name = gethostbyname(server);
+    ip_server_addr = (struct in_addr *)server_name->h_addr_list[0];
 
     // creates server socket
     server_socket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
     if (server_socket < 0)
     {
-        printf("socket server creation failed.\n");
+        printf("Socket server creation failed.\n");
         closesocket(server_socket);
         clearwinsock();
         getchar();
@@ -66,15 +89,15 @@ int main(int argc, char **argv)
     // memory allocation for server address
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server_addr.sin_port = htons(27015);
+    server_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*ip_server_addr));
+    server_addr.sin_port = htons(port);
 
     bind_socket = bind(server_socket, (struct sockaddr *)&server_addr,
                        sizeof(server_addr));
 
     if (bind_socket < 0)
     {
-        printf("bind failed.\n");
+        printf("Bind failed.\n");
         closesocket(server_socket);
         clearwinsock();
         getchar();
@@ -94,7 +117,7 @@ int main(int argc, char **argv)
 
         if (information_rcvd <= 0)
         {
-            printf("recvfrom server failed.\n");
+            printf("recvfrom() failed.\n");
             break;
         }
 
@@ -146,6 +169,7 @@ int main(int argc, char **argv)
 
         if (result_sent != DIM_INPUT)
         {
+            printf("sendto() failed.\n");
             break;
         }
     }
