@@ -11,9 +11,6 @@ typedef struct{
 
 } parsed_addr;
 
-// checks if the user input is valid
-int valid_input(char *user_input);
-
 // gets math_message from user input
 math_message get_math_message(char *user_input);
 

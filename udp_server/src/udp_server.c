@@ -21,7 +21,6 @@
 #endif
 
 #define DIM_INPUT 30
-#define LEN_HOSTNAME 50
 #define RESULT_DIGITS 10
 #define DEFAULT_PORT 27015
 #define DEFAULT_SERVER "calculator.uniba.it"
@@ -133,7 +132,7 @@ int main(int argc, char **argv)
         n2 = math_operation.n2;
         operation = math_operation.operation;
 
-        client_name = gethostbyaddr((char *)&client_addr.sin_addr, LEN_HOSTNAME, AF_INET);
+        client_name = gethostbyaddr((char *)&client_addr.sin_addr, HOSTNAME_LEN, AF_INET);
         printf("Requested operation: %c %d %d  from client: %s, IP: %s\n", operation, n1, n2, client_name->h_name, inet_ntoa(client_addr.sin_addr));
 
         switch (operation)
