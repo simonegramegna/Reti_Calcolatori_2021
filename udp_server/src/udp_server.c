@@ -23,7 +23,7 @@
 #define DIM_INPUT 30
 #define RESULT_DIGITS 10
 #define DEFAULT_PORT 27015
-#define DEFAULT_SERVER "calculator.uniba.it"
+#define DEFAULT_SERVER "localhost"
 
 void clearwinsock()
 {

@@ -21,7 +21,7 @@
 
 #define DIM_INPUT 30
 #define DEFAULT_PORT 27015
-#define DEFAULT_SERVER "calculator.uniba.it"
+#define DEFAULT_SERVER "localhost"
 
 void clearwinsock()
 {
@@ -102,14 +102,14 @@ int main(int argc, char **argv)
         server_len = sizeof(server_addr);
 
         // gets user input
-        printf("Enter the operation in this format: operator[+,-,x,\\], first number[integer], second number[integer], press = to quit\n");
+        printf("Enter the operation in this format: operator[+,-,x,\\]   first number[integer]   second number[integer] press = to quit\n");
         gets(user_input);
         strcpy(parsed_user_input, user_input);
 
         // repeats while the input is not valid
         while (valid_input(user_input) == 0)
         {
-            printf("Input NOT valid, please enter again the operation in this format: operator[+,-,x,\\], first number[integer], second number[integer], press = to quit\n");
+            printf("Input NOT valid, please enter again the operation in this format: operator[+,-,x,\\]   first number[integer]   second number[integer] press = to quit\n");
             gets(user_input);
             strcpy(parsed_user_input, user_input);
         }
