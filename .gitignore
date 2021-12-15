@@ -1,2 +1,6 @@
 .metadata/
 .vscode/
+/udp_client/Debug
+/udp_server/Debug
+/tcp_client_2122/Debug
+/tcp_server_2122/Debug
