@@ -25,7 +25,7 @@ Progettare ed implementare un'applicazione UDP client/server, dove il server è 
 * Le operazioni sono da intendersi indipendenti l'una dall'altra (ossia, i risultati delle operazioni non sono cumulativi).
 * Codice e commenti dovranno essere scritti in inglese.
 
-Primo esonero di Laboratorio - Reti di Calcolatori (INF) aa 20-21
+# Primo esonero di Laboratorio - Reti di Calcolatori (INF) aa 20-21
 
 Progettare ed implementare un'applicazione TCP client/server, dove il server è una calcolatrice remota che risponde alle richieste del client nel seguente modo:
 
