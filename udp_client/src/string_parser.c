@@ -6,10 +6,9 @@
 
 #include "string_parser.h"
 
-// ascii codes of '+' and '-' and '\'
+// ascii codes of '+' and '-'
 #define PLUS 43
 #define MINUS 45
-#define DIVISION 92
 
 // checks if the inputs are valid
 int check_limits(int num)
@@ -94,7 +93,7 @@ int correct_operation(char operator)
     correct = 0;
 
     // allowed operators
-    if (operator== '=' || operator== 'x' || operator== '+' ||(int) operator== DIVISION || operator== '-')
+    if (operator== '=' || operator== 'x' || operator== '+' || operator== '\\' || operator== '-')
     {
         correct = 1;
     }
