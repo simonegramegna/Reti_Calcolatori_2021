@@ -6,7 +6,7 @@
 
 #include "string_parser.h"
 
-// ascii codes of '+' and '-'
+// ascii codes of '+' and '-' and '\'
 #define PLUS 43
 #define MINUS 45
 #define DIVISION 92
@@ -179,11 +179,13 @@ void get_addr_port(parsed_addr *host_addr_port, char *server_name_port)
     int i;
     i = 0;
 
+    // takes server name and port number in this format name:port
     while (i < strlen(server_name_port))
     {
 
         if (server_name_port[i] == ':')
         {
+        	// first substring
             host_addr_port->host_name[i] = '\0';
             i++;
             break;
@@ -193,6 +195,7 @@ void get_addr_port(parsed_addr *host_addr_port, char *server_name_port)
         i++;
     }
 
+    // second substring
     char port_str[HOSTNAME_LEN];
     int j;
     j = 0;

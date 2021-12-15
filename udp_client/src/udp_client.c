@@ -62,12 +62,14 @@ int main(int argc, char **argv)
         strcpy(server, input_addr.host_name);
         port = input_addr.port;
 
+        // port check
         if (port < 0 || port > 65535)
         {
             port = DEFAULT_PORT;
         }
     }
 
+    // gets ip address of server from name
     remote_server_name = gethostbyname(server);
     in_addr_server = (struct in_addr *)remote_server_name->h_addr_list[0];
 

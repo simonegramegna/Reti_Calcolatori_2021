@@ -64,6 +64,7 @@ int main(int argc, char **argv)
         strcpy(server, input_addr.host_name);
         port = input_addr.port;
 
+        // port check
         if (port < 0 || port > 65535)
         {
             port = DEFAULT_PORT;
@@ -120,6 +121,7 @@ int main(int argc, char **argv)
             break;
         }
 
+        // received string parsing
         math_operation = get_math_message(operation_rcvd);
 
         int n1;
@@ -163,7 +165,7 @@ int main(int argc, char **argv)
         // converts float to string
         gcvt(computed_value, RESULT_DIGITS, computed_value_str);
 
-        // sends data back to client
+        // sends data back to client into a string
         result_sent = sendto(server_socket, computed_value_str, DIM_INPUT, 0, (struct sockaddr *)&client_addr, client_addr_len);
 
         if (result_sent != DIM_INPUT)
